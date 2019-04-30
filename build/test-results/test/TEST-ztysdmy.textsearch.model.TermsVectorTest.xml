@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ztysdmy.textsearch.model.TermsVectorTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2019-04-30T08:31:32" hostname="KBP1-LHP-F55543" time="0.005">
+  <properties/>
+  <testcase name="shouldCreateTestTerm" classname="ztysdmy.textsearch.model.TermsVectorTest" time="0.005"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
