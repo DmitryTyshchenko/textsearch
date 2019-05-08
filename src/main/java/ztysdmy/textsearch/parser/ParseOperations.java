@@ -56,7 +56,7 @@ public class ParseOperations {
 
 	static class SimpleSentenceSpliterator implements SentenceSplitterator {
 
-		private static final Pattern SENTENCE_END = Pattern.compile("!");
+		private static final Pattern SENTENCE_END = Pattern.compile("(!+|\\?+|\\.+)");
 
 		@Override
 		public Collection<String> parseSentences(String input) {
