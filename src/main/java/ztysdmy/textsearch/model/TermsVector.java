@@ -8,7 +8,7 @@ public class TermsVector {
 	final HashMap<String, Term> terms = new HashMap<>();
 
 	private final Segment segment;
-
+	
 	public TermsVector(Segment segment) {
 
 		this.segment = segment;
@@ -25,7 +25,7 @@ public class TermsVector {
 			v.increment();
 			return v;
 		};
-		
+
 		this.terms.compute(termValue, mappingFunction);
 	}
 
