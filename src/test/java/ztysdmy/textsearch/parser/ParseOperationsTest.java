@@ -14,4 +14,14 @@ public class ParseOperationsTest {
 		var withoutHtmlSegment = ParseOperations.removeHtmlTagsOperation.apply(Segment.sentence(withHtmlValue));
 		Assert.assertEquals("test", withoutHtmlSegment.toString());
 	}
+	
+	@Test
+	public void shouldParseSentence1() throws Exception {
+		
+		var candidate = "test!test";
+		var sentences = ParseOperations.spitToSentencesOperation.apply(Segment.sentence(candidate));
+		var array = sentences.toArray(new Segment[0]);
+		Assert.assertEquals("test!", array[0].toString());
+		Assert.assertEquals("test", array[1]);
+	}
 }
