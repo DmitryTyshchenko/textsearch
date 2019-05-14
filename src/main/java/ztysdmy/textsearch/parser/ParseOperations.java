@@ -19,28 +19,25 @@ public class ParseOperations {
 			segment);
 
 	private static Segment removeHtmlTags(Segment segment) {
-
 		var htmlTagsRemover = new SimpleHTMLTagsRemover();
-		var withoutTagsValue = htmlTagsRemover.removeHtmlTags(segment.toString());
-		return new Segment(withoutTagsValue, segment.segmentType());
+		return htmlTagsRemover.removeHtmlTags(segment);
 	}
 
 	private static Collection<Segment> splitToSentences(Segment input) {
 
 		SentenceSplitterator sentenceSpliterator = new SimpleSentenceSpliterator();
-		return sentenceSpliterator.parseSentences(input.toString()).stream()
-				.map(sentence -> new Segment(sentence, input.segmentType())).collect(Collectors.toList());
+		return sentenceSpliterator.parseSentences(input).stream().collect(Collectors.toList());
 	}
 
 	// TODO: think to move it into separate files
 	interface HTMLTagsRemover {
 
-		String removeHtmlTags(String input);
+		Segment removeHtmlTags(Segment input);
 	}
 
 	interface SentenceSplitterator {
 
-		Collection<String> parseSentences(String input);
+		Collection<Segment> parseSentences(Segment input);
 	}
 
 	static class SimpleHTMLTagsRemover implements HTMLTagsRemover {
@@ -48,33 +45,37 @@ public class ParseOperations {
 		private static final Pattern REMOVE_TAGS = Pattern.compile("<.+?>");
 
 		@Override
-		public String removeHtmlTags(String input) {
-			var matcher = REMOVE_TAGS.matcher(input);
-			return matcher.replaceAll("");
+		public Segment removeHtmlTags(Segment input) {
+			var matcher = REMOVE_TAGS.matcher(input.toString());
+			return new Segment(matcher.replaceAll(""), input.segmentType());
 		}
 	}
 
 	static class SimpleSentenceSpliterator implements SentenceSplitterator {
 
-		private static final Pattern SENTENCE_END = Pattern.compile("(!+|\\?+|\\.+)");
+		private static final Pattern SENTENCE_END = Pattern.compile("(!+|\\?+|\\.+)\\s");
 
 		@Override
-		public Collection<String> parseSentences(String input) {
-			Collection<String> collector = new ArrayList<>();
+		public Collection<Segment> parseSentences(Segment input) {
+			Collection<Segment> collector = new ArrayList<>();
 			parseAndCollectSentences(input, collector);
 			return collector;
 		}
 
-		private void parseAndCollectSentences(String input, Collection<String> collector) {
+		private void parseAndCollectSentences(Segment input, Collection<Segment> collector) {
 
-			var matcher = SENTENCE_END.matcher(input);
+			String segmentValue = input.toString();
+
+			var matcher = SENTENCE_END.matcher(segmentValue);
 
 			if (matcher.find()) {
 				var index = matcher.start() + (matcher.end() - matcher.start());
-				var sentence = input.substring(0, index);
-				collector.add(sentence);
-				var remaining = input.substring(index);
-				parseAndCollectSentences(remaining, collector);
+				var sentence = segmentValue.substring(0, index);
+				//remove space symbol at the end
+				sentence = sentence.stripTrailing();
+				collector.add(new Segment(sentence, input.segmentType()));
+				var remaining = segmentValue.substring(index);
+				parseAndCollectSentences(new Segment(remaining, input.segmentType()), collector);
 			} else {
 				collector.add(input);
 			}

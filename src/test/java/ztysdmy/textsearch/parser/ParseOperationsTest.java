@@ -18,7 +18,7 @@ public class ParseOperationsTest {
 	@Test
 	public void shouldParseSentence1() throws Exception {
 
-		var candidate = "test!test";
+		var candidate = "test! test";
 		var sentences = ParseOperations.spitToSentencesOperation.apply(Segment.sentence(candidate));
 		var array = sentences.toArray(new Segment[0]);
 		Assert.assertEquals("test!", array[0].toString());
@@ -28,7 +28,7 @@ public class ParseOperationsTest {
 	@Test
 	public void shouldParseSentence2() throws Exception {
 
-		var candidate = "test?test";
+		var candidate = "test? test";
 		var sentences = ParseOperations.spitToSentencesOperation.apply(Segment.sentence(candidate));
 		var array = sentences.toArray(new Segment[0]);
 		Assert.assertEquals("test?", array[0].toString());
@@ -38,7 +38,7 @@ public class ParseOperationsTest {
 	@Test
 	public void shouldParseSentence3() throws Exception {
 
-		var candidate = "test.test";
+		var candidate = "test. test";
 		var sentences = ParseOperations.spitToSentencesOperation.apply(Segment.sentence(candidate));
 		var array = sentences.toArray(new Segment[0]);
 		Assert.assertEquals("test.", array[0].toString());
@@ -48,7 +48,7 @@ public class ParseOperationsTest {
 	@Test
 	public void shouldParseSentence4() throws Exception {
 
-		var candidate = "test...test";
+		var candidate = "test... test";
 		var sentences = ParseOperations.spitToSentencesOperation.apply(Segment.sentence(candidate));
 		var array = sentences.toArray(new Segment[0]);
 		Assert.assertEquals("test...", array[0].toString());
