@@ -1,6 +1,7 @@
 package ztysdmy.textsearch.model;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 public class TermsVector {
@@ -8,7 +9,7 @@ public class TermsVector {
 	final HashMap<String, Term> terms = new HashMap<>();
 
 	private final Segment segment;
-	
+
 	public TermsVector(Segment segment) {
 
 		this.segment = segment;
@@ -29,4 +30,7 @@ public class TermsVector {
 		this.terms.compute(termValue, mappingFunction);
 	}
 
+	public Optional<Term> getTerm(String value) {
+		return Optional.ofNullable(terms.get(value));
+	}
 }
