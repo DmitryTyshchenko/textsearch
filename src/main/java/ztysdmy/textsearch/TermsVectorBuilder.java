@@ -20,17 +20,17 @@ public class TermsVectorBuilder {
 		
 		for (int i = 0; i < candidates.length; i++) {
 	    	var offset = i+1;
-	    	var compexityOffset = 0;
+	    	var complexityOffset = 0;
 			var value = candidates[i];
 			result.createOrUpdateTerm(value);
 			var stringBuilder = new StringBuilder();
 			stringBuilder.append(value);
-			while ((compexityOffset != complexity) && (offset < candidates.length)) {
+			while ((complexityOffset != complexity) && (offset < candidates.length)) {
 				stringBuilder.append(" ");
 				stringBuilder.append(candidates[offset]);
 				result.createOrUpdateTerm(stringBuilder.toString());
 				offset++;
-				compexityOffset++;
+				complexityOffset++;
 			}
 		}
 
