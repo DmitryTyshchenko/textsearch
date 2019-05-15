@@ -1,5 +1,7 @@
 package ztysdmy.textsearch;
 
+import java.util.function.Function;
+
 import ztysdmy.textsearch.model.Segment;
 import ztysdmy.textsearch.model.TermsVector;
 
@@ -16,24 +18,56 @@ public class TermsVectorBuilder {
 
 		TermsVector result = new TermsVector(segment);
 
-		String candidates[] = segment.toString().split("\\s");
-		
+		String candidates[] = splitSegmentValuesToWords.andThen(normilizer).apply(segment);
+
 		for (int i = 0; i < candidates.length; i++) {
-	    	var offset = i+1;
-	    	var complexityOffset = 0;
 			var value = candidates[i];
 			result.createOrUpdateTerm(value);
-			var stringBuilder = new StringBuilder();
-			stringBuilder.append(value);
-			while ((complexityOffset != complexity) && (offset < candidates.length)) {
-				stringBuilder.append(" ");
-				stringBuilder.append(candidates[offset]);
-				result.createOrUpdateTerm(stringBuilder.toString());
-				offset++;
-				complexityOffset++;
-			}
+			createComplexTerms(result, candidates, complexity, i);
 		}
 
 		return result;
 	}
+
+	/**
+	 * Creates complex Terms. For example for array ['a','b','c'] for word 'a' next Terms will be created with complexity 3:
+	 * 'a b', 'a b c' 
+	 * @param result
+	 * @param candidates
+	 * @param complexity
+	 * @param currentIndex
+	 */
+	private static void createComplexTerms(TermsVector result, String[] candidates, int complexity, int currentIndex) {
+
+		var offset = currentIndex + 1;
+		var complexityOffset = 0;
+
+		var stringBuilder = new StringBuilder();
+		stringBuilder.append(candidates[currentIndex]);
+		while ((complexityOffset != complexity) && (offset < candidates.length)) {
+			result.createOrUpdateTerm(createComplexTerm(stringBuilder, candidates, offset));
+			offset++;
+			complexityOffset++;
+		}
+
+	}
+
+	private static String createComplexTerm(StringBuilder stringBuilder, String[] candidates, int offset) {
+		stringBuilder.append(" ");
+		stringBuilder.append(candidates[offset]);
+		return stringBuilder.toString();
+	}
+
+	// TODO: consider to move it in different package
+	final static Function<Segment, String[]> splitSegmentValuesToWords = segment -> segment.toString().split("\\s");
+
+	final static Function<String, String> lowerCaseNormilizer = value -> value.toLowerCase();
+
+	final static Function<String[], String[]> normilizer = arrayOfStrings -> {
+		for (int i = 0; i < arrayOfStrings.length; i++) {
+			arrayOfStrings[i] = lowerCaseNormilizer.apply(arrayOfStrings[i]);
+		}
+		return arrayOfStrings;
+	};
+
 }
