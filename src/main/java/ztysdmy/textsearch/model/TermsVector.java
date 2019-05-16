@@ -34,32 +34,34 @@ public class TermsVector {
 	public Optional<Term> getTerm(String value) {
 		return Optional.ofNullable(terms.get(value));
 	}
-	
+
 	/**
-	 * Returns distance of this TermsVector to input TermsVector
-	 * Uses default distance calculation strategy 
+	 * Returns distance of This to Input TermsVector By
+	 * default calculates distance between two TermsVector as cosine
+	 * 
 	 * @param input
 	 * @return
 	 */
 	public double distance(TermsVector input) {
-		
-		return 0.d;
+		return defaultDistanceStratigy().apply(this, input);
 	}
-	
+
 	/**
-	 * 
+	 * Return distance of This to Input TermsVector 
 	 * @param input
-	 * @param stratigy
+	 * @param strategy - Strategy of distance calculation
 	 * @return
 	 */
 	public double distance(TermsVector input, BiFunction<TermsVector, TermsVector, Double> strategy) {
-		
+
 		return strategy.apply(this, input);
 	}
-	
-	/**private static final Function<TermsVector, Double> defaultDistanceStratigy() {
-		
-		return termsVector -> 
-	}**/
-	
+
+	private static final BiFunction<TermsVector, TermsVector, Double> defaultDistanceStratigy() {
+
+		return (tV1, tV2) -> {
+			return 0.d;
+		};
+	}
+
 }
