@@ -25,4 +25,11 @@ public class TermsVectorBuilderTest {
 		String[] expected = { "test", "a" };
 		Assert.assertArrayEquals(expected, after);
 	}
+	
+	@Test
+	public void shouldRemoveLastSymbol() throws Exception {
+		var test = "test!";
+		var result = TermsVectorBuilder.punctuationNormilizer.apply(test);
+		Assert.assertEquals("test", result);
+	}
 }

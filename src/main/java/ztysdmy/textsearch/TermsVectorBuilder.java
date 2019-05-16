@@ -1,5 +1,6 @@
 package ztysdmy.textsearch;
 
+import java.util.Set;
 import java.util.function.Function;
 
 import ztysdmy.textsearch.model.Segment;
@@ -63,6 +64,24 @@ public class TermsVectorBuilder {
 
 	final static Function<String, String> lowerCaseNormilizer = value -> value.toLowerCase();
 
+	//removes symbols like ',' ':' etc
+	private static final Set<Character> PUNCTUATION_VALUES = Set.of(',', '.', ':', '!', '?', ';');
+	
+	final static Function<String, String> punctuationNormilizer = value -> {
+		
+		char last_character = value.charAt((value.length()-1));
+		
+		if (!PUNCTUATION_VALUES.contains(last_character)) {
+			
+			return value;
+		}
+		return removeLastCharacter(value);
+	};
+	
+	private static String removeLastCharacter(String value) {
+		return value.substring(0, (value.length()-1));
+	}
+	
 	final static Function<String[], String[]> normilizer = arrayOfStrings -> {
 		for (int i = 0; i < arrayOfStrings.length; i++) {
 			arrayOfStrings[i] = lowerCaseNormilizer.apply(arrayOfStrings[i]);
