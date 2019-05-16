@@ -84,7 +84,7 @@ public class TermsVectorBuilder {
 	
 	final static Function<String[], String[]> normilizer = arrayOfStrings -> {
 		for (int i = 0; i < arrayOfStrings.length; i++) {
-			arrayOfStrings[i] = lowerCaseNormilizer.apply(arrayOfStrings[i]);
+			arrayOfStrings[i] = lowerCaseNormilizer.andThen(punctuationNormilizer).apply(arrayOfStrings[i]);
 		}
 		return arrayOfStrings;
 	};
