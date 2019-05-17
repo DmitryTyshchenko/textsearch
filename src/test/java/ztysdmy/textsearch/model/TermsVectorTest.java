@@ -25,4 +25,24 @@ public class TermsVectorTest {
 
 		return termsVector;
 	}
+	
+	//2 termsVectors should be equal
+	@Test
+	public void shouldCalculateDistance() throws Exception {
+		
+		TermsVector vector1 = testTermVector();
+		TermsVector vector2 = testTermVector();
+		
+		var distance = vector1.distance(vector2);
+		assertEquals(1.d, distance, 0.d);
+	}
+	
+	//2 termsVectors should not be equal
+	@Test
+	public void shouldCalculateDistance2() throws Exception {
+		var termsVector1 = TermsVectorBuilder.build(Segment.sentence("test"), 0);
+		var termsVector2 = TermsVectorBuilder.build(Segment.sentence("test2"), 0);
+		var distance = termsVector1.distance(termsVector2);
+		assertEquals(0.d, distance, 0.d);
+	}
 }

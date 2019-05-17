@@ -1,10 +1,7 @@
-package ztysdmy.textsearch;
+package ztysdmy.textsearch.model;
 
 import java.util.Set;
 import java.util.function.Function;
-
-import ztysdmy.textsearch.model.Segment;
-import ztysdmy.textsearch.model.TermsVector;
 
 public class TermsVectorBuilder {
 

@@ -1,9 +1,10 @@
-package ztysdmy.textsearch;
+package ztysdmy.textsearch.model;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ztysdmy.textsearch.TermsVectorBuilder;
+
 import ztysdmy.textsearch.model.Segment;
+import ztysdmy.textsearch.model.TermsVectorBuilder;
 
 public class TermsVectorBuilderTest {
 
@@ -32,4 +33,5 @@ public class TermsVectorBuilderTest {
 		var result = TermsVectorBuilder.punctuationNormilizer.apply(test);
 		Assert.assertEquals("test", result);
 	}
+	
 }

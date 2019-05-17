@@ -12,7 +12,7 @@ public class TermsVector {
 
 	private final Segment segment;
 
-	public TermsVector(Segment segment) {
+	TermsVector(Segment segment) {
 
 		this.segment = segment;
 	}
@@ -44,7 +44,7 @@ public class TermsVector {
 	 * @return
 	 */
 	public double distance(TermsVector input) {
-		return defaultDistanceStratigy().apply(this, input);
+		return tanimotoMetric().apply(this, input);
 	}
 
 	/**
@@ -60,7 +60,7 @@ public class TermsVector {
 	}
 
 	//Tanimoto Metric implementation
-	private static final BiFunction<TermsVector, TermsVector, Double> defaultDistanceStratigy() {
+	private static final BiFunction<TermsVector, TermsVector, Double> tanimotoMetric() {
 
 		return (tV1, tV2) -> {
 
@@ -69,7 +69,6 @@ public class TermsVector {
 
 			Set<String> termVector1 = new HashSet<>();
 			termVector1.addAll(tV1.terms.keySet());
-
 			Set<String> termVector2 = new HashSet<>();
 			termVector2.addAll(tV2.terms.keySet());
 
@@ -77,7 +76,12 @@ public class TermsVector {
 
 			var common = termVector1.size();
 
-			return (1.d - ((x + y - 2 * common / x + y - common) * 1.d));
+			var nominator = x + y - 2.d * common;
+			var denominator =  x + y - common;
+			
+			var distance =  nominator/denominator;
+			//convert result to probability
+			return 1.d - distance;
 		};
 	}
 
