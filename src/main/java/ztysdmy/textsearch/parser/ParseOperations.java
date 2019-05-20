@@ -30,11 +30,13 @@ public class ParseOperations {
 	}
 
 	// TODO: think to move it into separate files
+	@FunctionalInterface
 	interface HTMLTagsRemover {
 
 		Segment removeHtmlTags(Segment input);
 	}
 
+	@FunctionalInterface
 	interface SentenceSplitterator {
 
 		Collection<Segment> parseSentences(Segment input);

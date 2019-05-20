@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 
+import ztysdmy.textsearch.distance.TanimotoDistance;
+
 public class TermsVector {
 
 	final HashMap<String, Term> terms = new HashMap<>();
@@ -48,7 +50,7 @@ public class TermsVector {
 	 * @return
 	 */
 	public double distance(TermsVector input) {
-		return tanimotoMetric().apply(this, input);
+		return tanimotoDistance().apply(this, input);
 	}
 
 	/**
@@ -64,29 +66,9 @@ public class TermsVector {
 	}
 
 	//Tanimoto Metric implementation
-	private static final BiFunction<TermsVector, TermsVector, Double> tanimotoMetric() {
+	private static final BiFunction<TermsVector, TermsVector, Double> tanimotoDistance() {
 
-		return (tV1, tV2) -> {
-
-			var x = tV1.terms.keySet().size();
-			var y = tV2.terms.keySet().size();
-
-			Set<String> termVector1 = new HashSet<>();
-			termVector1.addAll(tV1.terms.keySet());
-			Set<String> termVector2 = new HashSet<>();
-			termVector2.addAll(tV2.terms.keySet());
-
-			termVector1.retainAll(termVector2);
-
-			var common = termVector1.size();
-
-			var nominator = x + y - 2.d * common;
-			var denominator =  x + y - common;
-			
-			var distance =  nominator/denominator;
-			//convert result to probability
-			return 1.d - distance;
-		};
+		return new TanimotoDistance();
 	}
 
 }
