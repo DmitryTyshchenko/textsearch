@@ -17,6 +17,10 @@ public class TermsVector {
 		this.segment = segment;
 	}
 
+	public HashMap<String, Term> terms() {
+		return this.terms;
+	}
+	
 	public void createOrUpdateTerm(String termValue) {
 
 		var term = new Term(termValue);
