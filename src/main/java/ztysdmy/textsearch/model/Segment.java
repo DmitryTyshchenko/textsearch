@@ -1,10 +1,27 @@
 package ztysdmy.textsearch.model;
 
+import java.util.function.Function;
+
 public class Segment {
 
-	public static enum SegmentType {
+	public enum SegmentType {
 
-		DOCUMENT, PARAGRAPH, SENTENCE;
+		DOCUMENT(null), PARAGRAPH(null), SENTENCE(segment -> {
+			return TermsVectorBuilder.build(segment);
+		});
+
+		private SegmentType(Function<Segment, TermsVector> function) {
+			this.function = function;
+		}
+
+		private Function<Segment, TermsVector> function;
+
+		private Function<Segment, TermsVector> termsVectorBuildStrategy() {
+
+			return function;
+		}
+		
+		//private final Fucntion<Segment, TermsVector> emptyTermsVector
 	}
 
 	private final SegmentType segmentType;
@@ -33,8 +50,13 @@ public class Segment {
 	public String toString() {
 		return value;
 	}
-	
+
 	public SegmentType segmentType() {
 		return segmentType;
+	}
+	
+	public TermsVector buildTermsVector() {
+		
+		return segmentType.termsVectorBuildStrategy().apply(this);
 	}
 }

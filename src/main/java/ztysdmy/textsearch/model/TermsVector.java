@@ -1,9 +1,7 @@
 package ztysdmy.textsearch.model;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.BiFunction;
 
 import ztysdmy.textsearch.distance.TanimotoDistance;
@@ -71,4 +69,7 @@ public class TermsVector {
 		return new TanimotoDistance();
 	}
 
+	public static TermsVector emptyTermsVector(Segment segment) {
+		return new TermsVector(segment);
+	}
 }
