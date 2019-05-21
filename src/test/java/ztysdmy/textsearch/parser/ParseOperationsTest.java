@@ -11,7 +11,7 @@ public class ParseOperationsTest {
 	public void shouldRemoveHtmlTags() throws Exception {
 
 		var withHtmlValue = "<tag>test</tag>";
-		var withoutHtmlSegment = ParseOperations.removeHtmlTagsOperation.apply(Segment.sentence(withHtmlValue));
+		var withoutHtmlSegment = ParseOperations.removeHtmlTagsOperation.apply(Segment.document(withHtmlValue));
 		Assert.assertEquals("test", withoutHtmlSegment.toString());
 	}
 
@@ -19,7 +19,7 @@ public class ParseOperationsTest {
 	public void shouldParseSentence1() throws Exception {
 
 		var candidate = "test! test";
-		var sentences = ParseOperations.spitToSentencesOperation.apply(Segment.sentence(candidate));
+		var sentences = ParseOperations.spitToSentencesOperation.apply(Segment.document(candidate));
 		var array = sentences.toArray(new Segment[0]);
 		Assert.assertEquals("test!", array[0].toString());
 		Assert.assertEquals("test", array[1].toString());
@@ -29,7 +29,7 @@ public class ParseOperationsTest {
 	public void shouldParseSentence2() throws Exception {
 
 		var candidate = "test? test";
-		var sentences = ParseOperations.spitToSentencesOperation.apply(Segment.sentence(candidate));
+		var sentences = ParseOperations.spitToSentencesOperation.apply(Segment.document(candidate));
 		var array = sentences.toArray(new Segment[0]);
 		Assert.assertEquals("test?", array[0].toString());
 		Assert.assertEquals("test", array[1].toString());
@@ -39,7 +39,7 @@ public class ParseOperationsTest {
 	public void shouldParseSentence3() throws Exception {
 
 		var candidate = "test. test";
-		var sentences = ParseOperations.spitToSentencesOperation.apply(Segment.sentence(candidate));
+		var sentences = ParseOperations.spitToSentencesOperation.apply(Segment.document(candidate));
 		var array = sentences.toArray(new Segment[0]);
 		Assert.assertEquals("test.", array[0].toString());
 		Assert.assertEquals("test", array[1].toString());
@@ -49,7 +49,7 @@ public class ParseOperationsTest {
 	public void shouldParseSentence4() throws Exception {
 
 		var candidate = "test... test";
-		var sentences = ParseOperations.spitToSentencesOperation.apply(Segment.sentence(candidate));
+		var sentences = ParseOperations.spitToSentencesOperation.apply(Segment.document(candidate));
 		var array = sentences.toArray(new Segment[0]);
 		Assert.assertEquals("test...", array[0].toString());
 		Assert.assertEquals("test", array[1].toString());
