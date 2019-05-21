@@ -49,7 +49,8 @@ public class ParseOperations {
 		@Override
 		public Segment removeHtmlTags(Segment input) {
 			var matcher = REMOVE_TAGS.matcher(input.toString());
-			return new Segment(matcher.replaceAll(""), input.segmentType());
+			input.setValue(matcher.replaceAll(""));
+			return input;
 		}
 	}
 

@@ -1,49 +1,23 @@
 package ztysdmy.textsearch.model;
 
-import java.util.function.Function;
+public abstract class Segment {
+	
+	private String value;
 
-public class Segment {
-
-	public enum SegmentType {
-
-		DOCUMENT(null), PARAGRAPH(null), SENTENCE(segment -> {
-			return TermsVectorBuilder.build(segment);
-		});
-
-		private SegmentType(Function<Segment, TermsVector> function) {
-			this.function = function;
-		}
-
-		private Function<Segment, TermsVector> function;
-
-		private Function<Segment, TermsVector> termsVectorBuildStrategy() {
-
-			return function;
-		}
-		
-		//private final Fucntion<Segment, TermsVector> emptyTermsVector
-	}
-
-	private final SegmentType segmentType;
-
-	private final String value;
-
-	public Segment(String value, SegmentType segmentType) {
-
-		this.segmentType = segmentType;
+	public Segment(String value) {
 		this.value = value;
 	}
 
 	// Utility methods to create Text Segments
-	public static Segment document(String value) {
+	public static Document document(String value) {
 
-		Segment result = new Segment(value, SegmentType.DOCUMENT);
+		Document result = new Document(value);
 		return result;
 	}
 
-	public static Segment sentence(String value) {
+	public static Sentence sentence(String value) {
 
-		Segment result = new Segment(value, SegmentType.SENTENCE);
+		Sentence result = new Sentence(value);
 		return result;
 	}
 
@@ -51,12 +25,24 @@ public class Segment {
 		return value;
 	}
 
-	public SegmentType segmentType() {
-		return segmentType;
+	public void setValue(String value) {
+		this.value = value;
 	}
 	
-	public TermsVector buildTermsVector() {
+	public static class Document extends Segment {
+
+		public Document(String value) {
+			super(value);
+		}
 		
-		return segmentType.termsVectorBuildStrategy().apply(this);
 	}
+	
+	public static class Sentence extends Segment {
+
+		public Sentence(String value) {
+			super(value);
+		}
+		
+	}
+	
 }
