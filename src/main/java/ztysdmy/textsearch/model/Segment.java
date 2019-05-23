@@ -2,7 +2,7 @@ package ztysdmy.textsearch.model;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class Segment {
+public class Segment implements Identifierable{
 	
 	private String value;
 	
@@ -31,6 +31,7 @@ public class Segment {
 		this.value = value;
 	}
 
+	@Override
 	public Long identifier() {
 		
 		return this.identifier;
