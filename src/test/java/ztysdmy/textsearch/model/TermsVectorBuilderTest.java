@@ -10,7 +10,7 @@ public class TermsVectorBuilderTest {
 
 	@Test
 	public void shouldCreateTermsVector1() throws Exception {
-		var segment = Segment.sentence("This is a some test sentence!");
+		var segment = Segment.from("This is a some test sentence!");
 		var termsVector = TermsVectorBuilder.build(segment);
 		termsVector.getTerm("is a").orElseThrow(() -> new RuntimeException("is a Not found"));
 		termsVector.getTerm("a some test").orElseThrow(() -> new RuntimeException("a some Test Not found"));

@@ -77,10 +77,10 @@ public class ParseOperations {
 				//remove space symbol at the end
 				sentence = sentence.stripTrailing();
 				//collector.add(new Segment(sentence, SegmentType.SENTENCE));
-				collector.add(Segment.sentence(sentence));
+				collector.add(Segment.from(sentence));
 				var remaining = segmentValue.substring(index);
 				//parseAndCollectSentences(new Segment(remaining, input.segmentType()), collector);
-				parseAndCollectSentences(Segment.sentence(remaining), collector);
+				parseAndCollectSentences(Segment.from(remaining), collector);
 			} else {
 				collector.add(input);
 			}

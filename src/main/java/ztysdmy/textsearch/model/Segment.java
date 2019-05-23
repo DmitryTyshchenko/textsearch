@@ -1,6 +1,6 @@
 package ztysdmy.textsearch.model;
 
-public abstract class Segment {
+public class Segment {
 	
 	private String value;
 
@@ -9,17 +9,12 @@ public abstract class Segment {
 	}
 
 	// Utility methods to create Text Segments
-	public static Document document(String value) {
+	public static Segment from(String value) {
 
-		Document result = new Document(value);
+		Segment result = new Segment(value);
 		return result;
 	}
 
-	public static Sentence sentence(String value) {
-
-		Sentence result = new Sentence(value);
-		return result;
-	}
 
 	public String toString() {
 		return value;
@@ -28,21 +23,6 @@ public abstract class Segment {
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
-	public static class Document extends Segment {
 
-		public Document(String value) {
-			super(value);
-		}
-		
-	}
-	
-	public static class Sentence extends Segment {
-
-		public Sentence(String value) {
-			super(value);
-		}
-		
-	}
 	
 }
