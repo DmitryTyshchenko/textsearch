@@ -2,12 +2,12 @@ package ztysdmy.textsearch.model;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class Segment implements Identifierable{
-	
+public class Segment implements Identifierable, TextProvider {
+
 	private String value;
-	
+
 	private static final AtomicLong identifierGenerator = new AtomicLong();
-	
+
 	private final Long identifier;
 
 	public Segment(String value) {
@@ -22,7 +22,6 @@ public class Segment implements Identifierable{
 		return result;
 	}
 
-
 	public String toString() {
 		return value;
 	}
@@ -33,8 +32,13 @@ public class Segment implements Identifierable{
 
 	@Override
 	public Long identifier() {
-		
+
 		return this.identifier;
 	}
-	
+
+	@Override
+	public String text() {
+		return toString();
+	}
+
 }

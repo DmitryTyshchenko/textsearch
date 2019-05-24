@@ -10,17 +10,14 @@ public class TermsVector {
 
 	final HashMap<String, Term> terms = new HashMap<>();
 
-	private final Segment segment;
+	TermsVector() {
 
-	TermsVector(Segment segment) {
-
-		this.segment = segment;
 	}
 
 	public HashMap<String, Term> terms() {
 		return this.terms;
 	}
-	
+
 	public void createOrUpdateTerm(String termValue) {
 
 		var term = new Term(termValue);
@@ -63,13 +60,13 @@ public class TermsVector {
 		return strategy.apply(this, input);
 	}
 
-	//Tanimoto Metric implementation
+	// Tanimoto Metric implementation
 	private static final BiFunction<TermsVector, TermsVector, Double> tanimotoDistance() {
 
 		return new TanimotoDistance();
 	}
 
-	public static TermsVector emptyTermsVector(Segment segment) {
-		return new TermsVector(segment);
+	public static TermsVector emptyTermsVector() {
+		return new TermsVector();
 	}
 }

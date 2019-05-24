@@ -17,7 +17,7 @@ public class TermsVectorTest {
 	private TermsVector testTermVector() {
 
 		var testKey = "test";
-		var termsVector = new TermsVector(Segment.from("test"));
+		var termsVector = new TermsVector();
 
 		for (int i = 0; i < 3; i++) {
 			termsVector.createOrUpdateTerm(testKey);

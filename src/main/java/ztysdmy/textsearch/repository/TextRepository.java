@@ -10,6 +10,6 @@ public interface TextRepository {
 
 	SortedSet<Document> get(TermsVector termsVector);
 	Collection<Document> getAll();
-	void add(Document document);
+	void populate(Collection<Document> documents);
 	
 }

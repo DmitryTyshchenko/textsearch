@@ -8,15 +8,15 @@ public class TermsVectorBuilder {
 	private TermsVectorBuilder() {
 	}
 
-	public static TermsVector build(Segment segment) {
-		return build(segment, 3);
+	public static TermsVector build(TextProvider textProvider) {
+		return build(textProvider, 3);
 	}
 
-	public static TermsVector build(Segment segment, int complexity) {
+	public static TermsVector build(TextProvider textProvider, int complexity) {
 
-		TermsVector result = new TermsVector(segment);
+		TermsVector result = new TermsVector();
 
-		String candidates[] = splitSegmentValuesToWords.andThen(normilizer).apply(segment);
+		String candidates[] = splitSegmentValuesToWords.andThen(normilizer).apply(textProvider.text());
 
 		for (int i = 0; i < candidates.length; i++) {
 			var value = candidates[i];
@@ -57,7 +57,7 @@ public class TermsVectorBuilder {
 	}
 
 	// TODO: consider to move it in different package
-	final static Function<Segment, String[]> splitSegmentValuesToWords = segment -> segment.toString().split("\\s");
+	final static Function<String, String[]> splitSegmentValuesToWords = value -> value.split("\\s");
 
 	final static Function<String, String> lowerCaseNormilizer = value -> value.toLowerCase();
 
