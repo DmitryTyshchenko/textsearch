@@ -19,15 +19,17 @@ public class InMemoryTextRepository implements TextRepository {
 	private InMemoryTextRepository() {
 	};
 
-	private static InMemoryTextRepository instance;
+	private volatile static InMemoryTextRepository instance;
 
-	public synchronized static InMemoryTextRepository instance() {
-
+	public static InMemoryTextRepository instance() {
+		
 		if (instance == null) {
-
-			instance = new InMemoryTextRepository();
+			synchronized (InMemoryTextRepository.class) {
+				if (instance == null) {
+					instance = new InMemoryTextRepository();
+				}
+			}
 		}
-
 		return instance;
 	}
 
@@ -55,7 +57,6 @@ public class InMemoryTextRepository implements TextRepository {
 			LocaltermsVectorEntities.addAll(termsVectors(document));
 		});
 
-		
 		readWriteLock.writeLock().lock();
 		try {
 
