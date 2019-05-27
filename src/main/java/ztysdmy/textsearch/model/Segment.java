@@ -2,7 +2,7 @@ package ztysdmy.textsearch.model;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class Segment implements Identifierable, TextProvider {
+public class Segment implements Identifierable<Long>, TextProvider {
 
 	private String value;
 

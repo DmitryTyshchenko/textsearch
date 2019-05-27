@@ -1,6 +1,6 @@
 package ztysdmy.textsearch.model;
 
-public interface Identifierable {
+public interface Identifierable<T> {
 
-	Long identifier();
+	T identifier();
 }

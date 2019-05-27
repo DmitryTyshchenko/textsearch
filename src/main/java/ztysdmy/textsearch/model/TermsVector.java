@@ -9,9 +9,13 @@ import ztysdmy.textsearch.distance.TanimotoDistance;
 public class TermsVector {
 
 	final HashMap<String, Term> terms = new HashMap<>();
+	
+	private  BiFunction<TermsVector, TermsVector, Double> evalFunction;
 
 	TermsVector() {
 
+		evalFunction = new  TanimotoDistance();
+		
 	}
 
 	public HashMap<String, Term> terms() {
@@ -39,31 +43,19 @@ public class TermsVector {
 
 	/**
 	 * Returns distance of This to Input TermsVector By default calculates distance
-	 * between two TermsVector by using Tanimoto metric
+	 * between two TermsVector 
 	 * 
 	 * @param input
 	 * @return
 	 */
 	public double distance(TermsVector input) {
-		return tanimotoDistance().apply(this, input);
+		return evalFunction().apply(this, input);
 	}
 
-	/**
-	 * Return distance of This to Input TermsVector
-	 * 
-	 * @param input
-	 * @param strategy - Strategy of distance calculation
-	 * @return
-	 */
-	public double distance(TermsVector input, BiFunction<TermsVector, TermsVector, Double> strategy) {
+	
+	private BiFunction<TermsVector, TermsVector, Double> evalFunction() {
 
-		return strategy.apply(this, input);
-	}
-
-	// Tanimoto Metric implementation
-	private static final BiFunction<TermsVector, TermsVector, Double> tanimotoDistance() {
-
-		return new TanimotoDistance();
+		return this.evalFunction;
 	}
 
 	public static TermsVector emptyTermsVector() {
