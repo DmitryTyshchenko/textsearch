@@ -58,6 +58,10 @@ public class TermsVector {
 		return this.evalFunction;
 	}
 
+	public void setEvalFunction(BiFunction<TermsVector, TermsVector, Double> evalFunction) {
+		this.evalFunction = evalFunction;
+	}
+	
 	public static TermsVector emptyTermsVector() {
 		return new TermsVector();
 	}

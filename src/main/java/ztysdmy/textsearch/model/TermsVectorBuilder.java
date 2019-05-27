@@ -12,6 +12,12 @@ public class TermsVectorBuilder {
 		return build(textProvider, 3);
 	}
 
+	public static TermsVector build(TextSegmentField textSegmentField) {
+		TermsVector termsVector = build(textSegmentField.value(), 3);
+		termsVector.setEvalFunction(textSegmentField.evalFunction());
+		return termsVector;
+	}
+
 	public static TermsVector build(TextProvider textProvider, int complexity) {
 
 		TermsVector result = new TermsVector();
@@ -28,8 +34,9 @@ public class TermsVectorBuilder {
 	}
 
 	/**
-	 * Creates complex Terms. For example for array ['a','b','c'] for word 'a' next Terms will be created with complexity 3:
-	 * 'a b', 'a b c' 
+	 * Creates complex Terms. For example for array ['a','b','c'] for word 'a' next
+	 * Terms will be created with complexity 3: 'a b', 'a b c'
+	 * 
 	 * @param result
 	 * @param candidates
 	 * @param complexity
@@ -61,24 +68,24 @@ public class TermsVectorBuilder {
 
 	final static Function<String, String> lowerCaseNormilizer = value -> value.toLowerCase();
 
-	//removes symbols like ',' ':' etc
+	// removes symbols like ',' ':' etc
 	private static final Set<Character> PUNCTUATION_VALUES = Set.of(',', '.', ':', '!', '?', ';');
-	
+
 	final static Function<String, String> punctuationNormilizer = value -> {
-		
-		char last_character = value.charAt((value.length()-1));
-		
+
+		char last_character = value.charAt((value.length() - 1));
+
 		if (!PUNCTUATION_VALUES.contains(last_character)) {
-			
+
 			return value;
 		}
 		return removeLastCharacter(value);
 	};
-	
+
 	private static String removeLastCharacter(String value) {
-		return value.substring(0, (value.length()-1));
+		return value.substring(0, (value.length() - 1));
 	}
-	
+
 	final static Function<String[], String[]> normilizer = arrayOfStrings -> {
 		for (int i = 0; i < arrayOfStrings.length; i++) {
 			arrayOfStrings[i] = lowerCaseNormilizer.andThen(punctuationNormilizer).apply(arrayOfStrings[i]);

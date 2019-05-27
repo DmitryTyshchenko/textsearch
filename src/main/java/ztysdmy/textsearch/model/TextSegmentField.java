@@ -21,11 +21,11 @@ public class TextSegmentField extends Field<TextSegment> implements EvaluationFu
 
 	private void initEvalFunction(String name) {
 
-		evalFunction = new TanimotoDistance();
+		this.evalFunction = new TanimotoDistance();
 		// smooth if not title
 		if (!"title".equals(name)) {
 
-			evalFunction.andThen(r -> r * 0.9d);
+			this.evalFunction = evalFunction.andThen(r -> r*0.9d);
 		}
 	}
 }
