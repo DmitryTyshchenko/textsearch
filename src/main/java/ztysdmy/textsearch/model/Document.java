@@ -21,7 +21,7 @@ public class Document implements Identifierable<Long> {
 	}
 
 	
-	public List<TextSegmentField> textProviders() {
+	public List<TextSegmentField> textSegmentFields() {
 
 		return fields.entrySet().stream()
 				.filter(entry -> TextSegmentField.class.isAssignableFrom(entry.getValue().getClass()))

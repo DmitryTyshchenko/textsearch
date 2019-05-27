@@ -16,7 +16,7 @@ public class DocumentTest {
 		Document document = new Document();
 		document.addField(field1);
 		document.addField(field2);
-		List<TextSegmentField> textProviders = document.textProviders();
+		List<TextSegmentField> textProviders = document.textSegmentFields();
 		Assert.assertEquals(1, textProviders.size());
 	}
 	
