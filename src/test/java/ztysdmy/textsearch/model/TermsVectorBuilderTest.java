@@ -3,14 +3,14 @@ package ztysdmy.textsearch.model;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ztysdmy.textsearch.model.Segment;
+import ztysdmy.textsearch.model.TextSegment;
 import ztysdmy.textsearch.model.TermsVectorBuilder;
 
 public class TermsVectorBuilderTest {
 
 	@Test
 	public void shouldCreateTermsVector1() throws Exception {
-		var segment = Segment.from("This is a some test sentence!");
+		var segment = TextSegment.from("This is a some test sentence!");
 		var termsVector = TermsVectorBuilder.build(segment);
 		termsVector.getTerm("is a").orElseThrow(() -> new RuntimeException("is a Not found"));
 		termsVector.getTerm("a some test").orElseThrow(() -> new RuntimeException("a some Test Not found"));

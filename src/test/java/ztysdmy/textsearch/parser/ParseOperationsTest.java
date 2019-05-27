@@ -3,7 +3,7 @@ package ztysdmy.textsearch.parser;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ztysdmy.textsearch.model.Segment;
+import ztysdmy.textsearch.model.TextSegment;
 
 public class ParseOperationsTest {
 
@@ -11,7 +11,7 @@ public class ParseOperationsTest {
 	public void shouldRemoveHtmlTags() throws Exception {
 
 		var withHtmlValue = "<tag>test</tag>";
-		var withoutHtmlSegment = ParseOperations.removeHtmlTagsOperation.apply(Segment.from(withHtmlValue));
+		var withoutHtmlSegment = ParseOperations.removeHtmlTagsOperation.apply(TextSegment.from(withHtmlValue));
 		Assert.assertEquals("test", withoutHtmlSegment.toString());
 	}
 
@@ -19,8 +19,8 @@ public class ParseOperationsTest {
 	public void shouldParseSentence1() throws Exception {
 
 		var candidate = "test! test";
-		var sentences = ParseOperations.spitToSentencesOperation.apply(Segment.from(candidate));
-		var array = sentences.toArray(new Segment[0]);
+		var sentences = ParseOperations.spitToSentencesOperation.apply(TextSegment.from(candidate));
+		var array = sentences.toArray(new TextSegment[0]);
 		Assert.assertEquals("test!", array[0].toString());
 		Assert.assertEquals("test", array[1].toString());
 	}
@@ -29,8 +29,8 @@ public class ParseOperationsTest {
 	public void shouldParseSentence2() throws Exception {
 
 		var candidate = "test? test";
-		var sentences = ParseOperations.spitToSentencesOperation.apply(Segment.from(candidate));
-		var array = sentences.toArray(new Segment[0]);
+		var sentences = ParseOperations.spitToSentencesOperation.apply(TextSegment.from(candidate));
+		var array = sentences.toArray(new TextSegment[0]);
 		Assert.assertEquals("test?", array[0].toString());
 		Assert.assertEquals("test", array[1].toString());
 	}
@@ -39,8 +39,8 @@ public class ParseOperationsTest {
 	public void shouldParseSentence3() throws Exception {
 
 		var candidate = "test. test";
-		var sentences = ParseOperations.spitToSentencesOperation.apply(Segment.from(candidate));
-		var array = sentences.toArray(new Segment[0]);
+		var sentences = ParseOperations.spitToSentencesOperation.apply(TextSegment.from(candidate));
+		var array = sentences.toArray(new TextSegment[0]);
 		Assert.assertEquals("test.", array[0].toString());
 		Assert.assertEquals("test", array[1].toString());
 	}
@@ -49,8 +49,8 @@ public class ParseOperationsTest {
 	public void shouldParseSentence4() throws Exception {
 
 		var candidate = "test... test";
-		var sentences = ParseOperations.spitToSentencesOperation.apply(Segment.from(candidate));
-		var array = sentences.toArray(new Segment[0]);
+		var sentences = ParseOperations.spitToSentencesOperation.apply(TextSegment.from(candidate));
+		var array = sentences.toArray(new TextSegment[0]);
 		Assert.assertEquals("test...", array[0].toString());
 		Assert.assertEquals("test", array[1].toString());
 	}

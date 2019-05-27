@@ -21,11 +21,11 @@ public class Document implements Identifierable<Long> {
 	}
 
 	
-	public List<TextProvider> textProviders() {
+	public List<TextSegmentField> textProviders() {
 
 		return fields.entrySet().stream()
-				.filter(entry -> TextProvider.class.isAssignableFrom(entry.getValue().value().getClass()))
-				.map(entry -> (TextProvider) entry.getValue().value()).collect(Collectors.toList());
+				.filter(entry -> TextSegmentField.class.isAssignableFrom(entry.getValue().getClass()))
+				.map(entry -> (TextSegmentField) entry.getValue()).collect(Collectors.toList());
 	}
 	
 }

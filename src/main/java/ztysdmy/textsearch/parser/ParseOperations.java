@@ -6,24 +6,24 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import ztysdmy.textsearch.model.Segment;
+import ztysdmy.textsearch.model.TextSegment;
 
 public class ParseOperations {
 
 	private ParseOperations() {
 	}
 
-	public static final Function<Segment, Segment> removeHtmlTagsOperation = segment -> removeHtmlTags(segment);
+	public static final Function<TextSegment, TextSegment> removeHtmlTagsOperation = segment -> removeHtmlTags(segment);
 
-	public static final Function<Segment, Collection<Segment>> spitToSentencesOperation = segment -> splitToSentences(
+	public static final Function<TextSegment, Collection<TextSegment>> spitToSentencesOperation = segment -> splitToSentences(
 			segment);
 
-	private static Segment removeHtmlTags(Segment segment) {
+	private static TextSegment removeHtmlTags(TextSegment segment) {
 		var htmlTagsRemover = new SimpleHTMLTagsRemover();
 		return htmlTagsRemover.removeHtmlTags(segment);
 	}
 
-	private static Collection<Segment> splitToSentences(Segment input) {
+	private static Collection<TextSegment> splitToSentences(TextSegment input) {
 
 		SentenceSplitterator sentenceSpliterator = new SimpleSentenceSpliterator();
 		return sentenceSpliterator.parseSentences(input).stream().collect(Collectors.toList());
@@ -33,13 +33,13 @@ public class ParseOperations {
 	@FunctionalInterface
 	interface HTMLTagsRemover {
 
-		Segment removeHtmlTags(Segment input);
+		TextSegment removeHtmlTags(TextSegment input);
 	}
 
 	@FunctionalInterface
 	interface SentenceSplitterator {
 
-		Collection<Segment> parseSentences(Segment input);
+		Collection<TextSegment> parseSentences(TextSegment input);
 	}
 
 	static class SimpleHTMLTagsRemover implements HTMLTagsRemover {
@@ -47,7 +47,7 @@ public class ParseOperations {
 		private static final Pattern REMOVE_TAGS = Pattern.compile("<.+?>");
 
 		@Override
-		public Segment removeHtmlTags(Segment input) {
+		public TextSegment removeHtmlTags(TextSegment input) {
 			var matcher = REMOVE_TAGS.matcher(input.toString());
 			input.setValue(matcher.replaceAll(""));
 			return input;
@@ -59,13 +59,13 @@ public class ParseOperations {
 		private static final Pattern SENTENCE_END = Pattern.compile("(!+|\\?+|\\.+)\\s");
 
 		@Override
-		public Collection<Segment> parseSentences(Segment input) {
-			Collection<Segment> collector = new ArrayList<>();
+		public Collection<TextSegment> parseSentences(TextSegment input) {
+			Collection<TextSegment> collector = new ArrayList<>();
 			parseAndCollectSentences(input, collector);
 			return collector;
 		}
 
-		private void parseAndCollectSentences(Segment input, Collection<Segment> collector) {
+		private void parseAndCollectSentences(TextSegment input, Collection<TextSegment> collector) {
 
 			String segmentValue = input.toString();
 
@@ -77,10 +77,10 @@ public class ParseOperations {
 				//remove space symbol at the end
 				sentence = sentence.stripTrailing();
 				//collector.add(new Segment(sentence, SegmentType.SENTENCE));
-				collector.add(Segment.from(sentence));
+				collector.add(TextSegment.from(sentence));
 				var remaining = segmentValue.substring(index);
 				//parseAndCollectSentences(new Segment(remaining, input.segmentType()), collector);
-				parseAndCollectSentences(Segment.from(remaining), collector);
+				parseAndCollectSentences(TextSegment.from(remaining), collector);
 			} else {
 				collector.add(input);
 			}

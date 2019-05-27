@@ -40,8 +40,8 @@ public class TermsVectorTest {
 	//2 termsVectors should not be equal
 	@Test
 	public void shouldCalculateDistance2() throws Exception {
-		var termsVector1 = TermsVectorBuilder.build(Segment.from("test"), 0);
-		var termsVector2 = TermsVectorBuilder.build(Segment.from("test2"), 0);
+		var termsVector1 = TermsVectorBuilder.build(TextSegment.from("test"), 0);
+		var termsVector2 = TermsVectorBuilder.build(TextSegment.from("test2"), 0);
 		var distance = termsVector1.eval(termsVector2);
 		assertEquals(0.d, distance, 0.d);
 	}
