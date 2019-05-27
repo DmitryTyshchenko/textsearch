@@ -48,7 +48,7 @@ public class TermsVector {
 	 * @param input
 	 * @return
 	 */
-	public double distance(TermsVector input) {
+	public double eval(TermsVector input) {
 		return evalFunction().apply(this, input);
 	}
 

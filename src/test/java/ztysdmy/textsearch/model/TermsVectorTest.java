@@ -33,7 +33,7 @@ public class TermsVectorTest {
 		TermsVector vector1 = testTermVector();
 		TermsVector vector2 = testTermVector();
 		
-		var distance = vector1.distance(vector2);
+		var distance = vector1.eval(vector2);
 		assertEquals(1.d, distance, 0.d);
 	}
 	
@@ -42,7 +42,7 @@ public class TermsVectorTest {
 	public void shouldCalculateDistance2() throws Exception {
 		var termsVector1 = TermsVectorBuilder.build(Segment.from("test"), 0);
 		var termsVector2 = TermsVectorBuilder.build(Segment.from("test2"), 0);
-		var distance = termsVector1.distance(termsVector2);
+		var distance = termsVector1.eval(termsVector2);
 		assertEquals(0.d, distance, 0.d);
 	}
 }
