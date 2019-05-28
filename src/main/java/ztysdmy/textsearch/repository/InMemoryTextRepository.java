@@ -2,11 +2,14 @@ package ztysdmy.textsearch.repository;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import ztysdmy.textsearch.model.Document;
@@ -35,23 +38,46 @@ public class InMemoryTextRepository implements TextRepository {
 	}
 
 	@Override
-	public SortedSet<Document> get(TermsVector termsVector) {
-		// TODO Auto-generated method stub
-		return null;
+	public Collection<Document> get(TermsVector termsVector) {
+
+		return get(() -> {
+
+			SortedSet<TermsVectorEntityWithWeight> sortedTermsVectors = new TreeSet<>(termsVectorWithWeightComparator);
+
+			for (TermsVectorEntity termsVectorEntity : termsVectorEntities) {
+
+				Double distance = termsVectorEntity.termsVector.eval(termsVector);
+				TermsVectorEntityWithWeight e = new TermsVectorEntityWithWeight(termsVectorEntity, distance);
+				sortedTermsVectors.add(e);
+			}
+
+			return sortedTermsVectors.stream().map(a -> this.documents.get(a.termsVectorEntity.documentId))
+					.collect(Collectors.toList());
+
+		});
+
 	}
 
 	@Override
-	public Collection<Document> getAll() {
+	public Collection<Document> get() {
+		return get(() -> {
+			return this.documents.entrySet().stream().map(entry -> entry.getValue()).collect(Collectors.toList());
+
+		});
+	}
+
+	private Collection<Document> get(Supplier<List<Document>> supplier) {
 		List<Document> result = new ArrayList<>();
 		readWriteLock.readLock().lock();
 		try {
 
-			result = this.documents.entrySet().stream().map(entry -> entry.getValue()).collect(Collectors.toList());
+			result = supplier.get();
 
 		} finally {
 			readWriteLock.readLock().unlock();
 		}
 		return result;
+
 	}
 
 	private ArrayList<TermsVectorEntity> termsVectorEntities = new ArrayList<>();
@@ -120,13 +146,47 @@ public class InMemoryTextRepository implements TextRepository {
 		final TermsVector termsVector;
 		final Long documentId;
 
-		public TermsVectorEntity(TermsVector termsVector, Long documentId) {
+		TermsVectorEntity(TermsVector termsVector, Long documentId) {
 			this.termsVector = termsVector;
 			this.documentId = documentId;
+		}
+	}
+
+	private static class TermsVectorEntityWithWeight {
+		final TermsVectorEntity termsVectorEntity;
+		final Double weight;
+
+		TermsVectorEntityWithWeight(TermsVectorEntity termsVectorEntity, Double weight) {
+
+			this.termsVectorEntity = termsVectorEntity;
+			this.weight = weight;
+		}
+		
+		@Override
+	    public boolean equals(Object o) { 
+			
+			 if (o == this) { 
+		            return true; 
+		        } 
+		  
+	
+		        if (!(o instanceof TermsVectorEntityWithWeight)) { 
+		            return false; 
+		        } 
+		          
+		
+		        TermsVectorEntityWithWeight c = (TermsVectorEntityWithWeight) o; 
+		          
+		
+		        return weight.equals(c.weight);
+		               
+			
 		}
 
 	}
 
 	private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
+	private final Comparator<TermsVectorEntityWithWeight> termsVectorWithWeightComparator = (a, b) -> a.weight < b.weight ? -1
+			: a.weight == b.weight ? 0 : 1;
 }
