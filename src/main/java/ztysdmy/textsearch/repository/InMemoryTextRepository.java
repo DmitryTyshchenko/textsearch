@@ -163,24 +163,20 @@ public class InMemoryTextRepository implements TextRepository {
 		}
 		
 		@Override
-	    public boolean equals(Object o) { 
-			
-			 if (o == this) { 
-		            return true; 
-		        } 
-		  
-	
-		        if (!(o instanceof TermsVectorEntityWithWeight)) { 
-		            return false; 
-		        } 
-		          
-		
-		        TermsVectorEntityWithWeight c = (TermsVectorEntityWithWeight) o; 
-		          
-		
-		        return weight.equals(c.weight);
-		               
-			
+		public boolean equals(Object o) {
+
+			if (o == this) {
+				return true;
+			}
+
+			if (!(o instanceof TermsVectorEntityWithWeight)) {
+				return false;
+			}
+
+			TermsVectorEntityWithWeight c = (TermsVectorEntityWithWeight) o;
+
+			return weight.equals(c.weight);
+
 		}
 
 	}
