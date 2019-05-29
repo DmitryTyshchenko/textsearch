@@ -11,9 +11,12 @@ public class Document implements Identifierable<Long> {
 
 	private HashMap<String, Field<?>> fields = new HashMap<>();
 
+	private final Long identifier = identifierGenerator.incrementAndGet();
+	
+	
 	@Override
 	public Long identifier() {
-		return identifierGenerator.incrementAndGet();
+		return identifier;
 	}
 
 	public void addField(Field<?> field) {

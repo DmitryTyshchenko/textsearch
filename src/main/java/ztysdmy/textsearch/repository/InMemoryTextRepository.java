@@ -2,6 +2,7 @@ package ztysdmy.textsearch.repository;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -42,16 +43,18 @@ public class InMemoryTextRepository implements TextRepository {
 
 		return get(() -> {
 
-			SortedSet<TermsVectorEntityWithWeight> sortedTermsVectors = new TreeSet<>(termsVectorWithWeightComparator);
-
+			ArrayList<TermsVectorEntityWithWeight> temp = new ArrayList<>();
+			
 			for (TermsVectorEntity termsVectorEntity : termsVectorEntities) {
 
 				Double distance = termsVectorEntity.termsVector.eval(termsVector);
 				TermsVectorEntityWithWeight e = new TermsVectorEntityWithWeight(termsVectorEntity, distance);
-				sortedTermsVectors.add(e);
+				temp.add(e);
 			}
 
-			return sortedTermsVectors.stream().map(a -> this.documents.get(a.termsVectorEntity.documentId))
+			Collections.sort(temp, termsVectorWithWeightComparator);
+			
+			return temp.stream().map(a -> this.documents.get(a.termsVectorEntity.documentId))
 					.collect(Collectors.toList());
 
 		});
@@ -183,6 +186,6 @@ public class InMemoryTextRepository implements TextRepository {
 
 	private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
-	private final Comparator<TermsVectorEntityWithWeight> termsVectorWithWeightComparator = (a, b) -> a.weight < b.weight ? -1
-			: a.weight == b.weight ? 0 : 1;
+	private final Comparator<TermsVectorEntityWithWeight> termsVectorWithWeightComparator = (a, b) -> a.weight < b.weight ? 1
+			: a.weight == b.weight ? 0 : -1;
 }
