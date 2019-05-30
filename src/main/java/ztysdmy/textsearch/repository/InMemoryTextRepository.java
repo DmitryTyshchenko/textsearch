@@ -186,4 +186,10 @@ public class InMemoryTextRepository implements TextRepository {
 
 	private final Comparator<TermsVectorEntityWithWeight> termsVectorWithWeightComparator = (a, b) -> a.weight < b.weight ? 1
 			: a.weight == b.weight ? 0 : -1;
+
+	@Override
+	public void clear() {
+		 this.termsVectorEntities = new ArrayList<>();
+		 this.documents = new HashMap<>();
+	}
 }

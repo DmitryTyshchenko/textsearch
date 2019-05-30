@@ -10,5 +10,6 @@ public interface TextRepository {
 	Collection<Document> get(TermsVector termsVector);
 	Collection<Document> get();
 	void populate(Collection<Document> documents);
+	void clear();
 	
 }

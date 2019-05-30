@@ -20,6 +20,7 @@ public class InMemoryTextRepositoryTest {
 	public void shouldGetAllDocuments() throws Exception {
 		
 		var textRepository = InMemoryTextRepository.instance();
+		textRepository.clear();
 		var documents =  documents();
 		textRepository.populate(documents);
 		var  result = textRepository.get();
@@ -31,6 +32,7 @@ public class InMemoryTextRepositoryTest {
 	public void shouldSortDocuments() throws Exception {
 		
 		var textRepository = InMemoryTextRepository.instance();
+		textRepository.clear();
 		var documents =  documents();
 		var array1 = documents.toArray(new Document[0]);
 		textRepository.populate(documents);
@@ -47,7 +49,7 @@ public class InMemoryTextRepositoryTest {
 		
 		var documents = documents();
 		var textRepository = InMemoryTextRepository.instance();
-		
+		textRepository.clear();
 		var futureDocuments = CompletableFuture.supplyAsync(()->{
 			
 			@SuppressWarnings("unchecked")
@@ -65,6 +67,7 @@ public class InMemoryTextRepositoryTest {
 		CompletableFuture.runAsync(()->{
 			try {
 				Thread.currentThread().sleep(2000);
+				
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
