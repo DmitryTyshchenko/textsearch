@@ -8,8 +8,14 @@ import ztysdmy.textsearch.model.TermsVector;
 public interface TextRepository {
 
 	Collection<Document> get(TermsVector termsVector);
+
 	Collection<Document> get();
+
 	void populate(Collection<Document> documents);
+
 	void clear();
-	
+
+	public static TextRepository instance() {
+		return InMemoryTextRepository.instance();
+	}
 }
