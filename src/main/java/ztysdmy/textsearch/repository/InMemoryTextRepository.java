@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.StampedLock;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -69,13 +70,23 @@ public class InMemoryTextRepository implements TextRepository {
 
 	private Collection<Document> get(Supplier<List<Document>> supplier) {
 		List<Document> result = new ArrayList<>();
-		readWriteLock.readLock().lock();
+		long stamp = readWriteLock.tryOptimisticRead();
+		
+		result = supplier.get();
+		
+		if (readWriteLock.validate(stamp)) {
+			return result;
+		}
+		
+		
+		stamp = readWriteLock.readLock();
+		
 		try {
 
 			result = supplier.get();
 
 		} finally {
-			readWriteLock.readLock().unlock();
+			readWriteLock.unlockRead(stamp);
 		}
 		return result;
 
@@ -90,14 +101,14 @@ public class InMemoryTextRepository implements TextRepository {
 		ArrayList<TermsVectorEntity> LocaltermsVectorEntities = termsVectors(documents);
 		HashMap<Long, Document> localDocuments = documents(documents);
 
-		readWriteLock.writeLock().lock();
+		long stamp = readWriteLock.writeLock();
 		try {
 
 			this.documents = localDocuments;
 			this.termsVectorEntities = LocaltermsVectorEntities;
 
 		} finally {
-			readWriteLock.writeLock().unlock();
+			readWriteLock.unlockWrite(stamp);
 		}
 
 	}
@@ -182,7 +193,7 @@ public class InMemoryTextRepository implements TextRepository {
 
 	}
 
-	private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+	private final StampedLock readWriteLock = new StampedLock();
 
 	private final Comparator<TermsVectorEntityWithWeight> termsVectorWithWeightComparator = (a, b) -> a.weight < b.weight ? 1
 			: a.weight == b.weight ? 0 : -1;
