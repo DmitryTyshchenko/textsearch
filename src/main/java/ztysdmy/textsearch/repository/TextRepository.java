@@ -7,7 +7,7 @@ import ztysdmy.textsearch.model.TermsVector;
 
 public interface TextRepository {
 
-	Collection<Document> get(TermsVector termsVector);
+	Collection<Document> distance(TermsVector termsVector);
 
 	Collection<Document> get();
 

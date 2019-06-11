@@ -36,7 +36,7 @@ public class InMemoryTextRepository implements TextRepository {
 	}
 
 	@Override
-	public Collection<Document> get(TermsVector termsVector) {
+	public Collection<Document> distance(TermsVector termsVector) {
 
 		return get(() -> {
 

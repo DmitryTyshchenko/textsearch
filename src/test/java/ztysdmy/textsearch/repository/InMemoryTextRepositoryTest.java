@@ -37,7 +37,7 @@ public class InMemoryTextRepositoryTest {
 		var array1 = documents.toArray(new Document[0]);
 		textRepository.populate(documents);
 		var request = TermsVectorBuilder.build(TextSegment.from("test1"));
-		var documents2 = textRepository.get(request);
+		var documents2 = textRepository.distance(request);
 		var array2 = documents2.toArray(new Document[0]);
 		Assert.assertEquals(array2[0].identifier(), array1[1].identifier());
 	}
