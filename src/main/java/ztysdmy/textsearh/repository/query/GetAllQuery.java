@@ -10,7 +10,7 @@ public class GetAllQuery implements Query {
 	@Override
 	public Collection<Document> query() {
 		
-		return TextRepository.instance().get();
+		return TextRepository.inMemoryInstance().get();
 	}
 
 	

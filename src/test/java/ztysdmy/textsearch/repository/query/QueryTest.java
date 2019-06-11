@@ -49,8 +49,8 @@ public class QueryTest {
 	private void clearAndPopulateTextRepository() {
 
 		var docs = documents();
-		TextRepository.instance().clear();
-		TextRepository.instance().populate(docs);
+		TextRepository.inMemoryInstance().clear();
+		TextRepository.inMemoryInstance().populate(docs);
 
 	}
 

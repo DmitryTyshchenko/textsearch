@@ -16,7 +16,7 @@ public class DistanceQuery implements Query {
 	
 	@Override
 	public Collection<Document> query() {
-		 return TextRepository.instance().get(this.termsVector);
+		 return TextRepository.inMemoryInstance().get(this.termsVector);
 	}
 
 }

@@ -15,7 +15,7 @@ public class ParseOperations {
 
 	public static final Function<TextSegment, TextSegment> removeHtmlTagsOperation = segment -> removeHtmlTags(segment);
 
-	public static final Function<TextSegment, Collection<TextSegment>> spitToSentencesOperation = segment -> splitToSentences(
+	public static final Function<TextSegment, Collection<TextSegment>> splitToSentencesOperation = segment -> splitToSentences(
 			segment);
 
 	private static TextSegment removeHtmlTags(TextSegment segment) {

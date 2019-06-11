@@ -15,7 +15,7 @@ public interface TextRepository {
 
 	void clear();
 
-	public static TextRepository instance() {
+	public static TextRepository inMemoryInstance() {
 		return InMemoryTextRepository.instance();
 	}
 }

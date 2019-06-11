@@ -13,9 +13,7 @@ public class TermsVector {
 	private  BiFunction<TermsVector, TermsVector, Double> evalFunction;
 
 	TermsVector() {
-
-		evalFunction = new  TanimotoDistance();
-		
+		evalFunction = new TanimotoDistance();		
 	}
 
 	public HashMap<String, Term> terms() {
