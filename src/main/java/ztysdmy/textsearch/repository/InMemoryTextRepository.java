@@ -42,7 +42,11 @@ public class InMemoryTextRepository implements TextRepository {
 
 			ArrayList<TermsVectorEntityWithWeight> temp = new ArrayList<>();
 			
-			for (TermsVectorEntity termsVectorEntity : termsVectorEntities) {
+			var localTermsVectorEntities = termsVectorEntities;
+			
+			var localDocuments = documents;
+			
+			for (TermsVectorEntity termsVectorEntity : localTermsVectorEntities) {
 
 				Double distance = termsVectorEntity.termsVector.eval(termsVector);
 				TermsVectorEntityWithWeight e = new TermsVectorEntityWithWeight(termsVectorEntity, distance);
@@ -51,7 +55,7 @@ public class InMemoryTextRepository implements TextRepository {
 
 			Collections.sort(temp, termsVectorWithWeightComparator);
 			
-			return temp.stream().map(a -> this.documents.get(a.termsVectorEntity.documentId))
+			return temp.stream().map(a -> localDocuments.get(a.termsVectorEntity.documentId))
 					.collect(Collectors.toList());
 
 		});
@@ -60,8 +64,11 @@ public class InMemoryTextRepository implements TextRepository {
 
 	@Override
 	public Collection<Document> get() {
+		
+		var localDocuments = documents;
+		
 		return get(() -> {
-			return this.documents.entrySet().stream().map(entry -> entry.getValue()).collect(Collectors.toList());
+			return localDocuments.entrySet().stream().map(entry -> entry.getValue()).collect(Collectors.toList());
 
 		});
 	}
@@ -89,8 +96,8 @@ public class InMemoryTextRepository implements TextRepository {
 
 	}
 
-	private ArrayList<TermsVectorEntity> termsVectorEntities = new ArrayList<>();
-	private HashMap<Long, Document> documents = new HashMap<>();
+	private volatile ArrayList<TermsVectorEntity> termsVectorEntities = new ArrayList<>();
+	private volatile HashMap<Long, Document> documents = new HashMap<>();
 
 	@Override
 	public void populate(Collection<Document> documents) {

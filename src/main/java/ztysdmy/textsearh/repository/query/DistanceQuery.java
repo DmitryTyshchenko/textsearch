@@ -10,13 +10,15 @@ public class DistanceQuery implements Query {
 
 	private TermsVector termsVector;
 	
+	protected TextRepository textRepository = TextRepository.instance(); 
+	
 	public DistanceQuery(TermsVector termsVector) {
 		this.termsVector = termsVector;
 	}
 	
 	@Override
 	public Collection<Document> query() {
-		 return TextRepository.inMemoryInstance().likelihood(this.termsVector);
+		 return textRepository.likelihood(this.termsVector);
 	}
 
 }
