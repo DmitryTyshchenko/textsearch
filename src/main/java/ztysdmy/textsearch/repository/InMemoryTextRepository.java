@@ -36,7 +36,7 @@ public class InMemoryTextRepository implements TextRepository {
 	}
 
 	@Override
-	public Collection<Document> distance(TermsVector termsVector) {
+	public Collection<Document> likelihood(TermsVector termsVector) {
 
 		return get(() -> {
 
@@ -75,7 +75,6 @@ public class InMemoryTextRepository implements TextRepository {
 		if (readWriteLock.validate(stamp)) {
 			return result;
 		}
-		
 		
 		stamp = readWriteLock.readLock();
 		
