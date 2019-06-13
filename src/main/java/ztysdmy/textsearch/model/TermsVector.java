@@ -4,16 +4,12 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
-import ztysdmy.textsearch.distance.TanimotoDistance;
-
 public class TermsVector {
 
 	final HashMap<String, Term> terms = new HashMap<>();
 	
-	private  BiFunction<TermsVector, TermsVector, Double> evalFunction;
 
 	TermsVector() {
-		evalFunction = new TanimotoDistance();		
 	}
 
 	public HashMap<String, Term> terms() {
@@ -40,27 +36,11 @@ public class TermsVector {
 	}
 
 	/**
-	 * Returns distance of This to Input TermsVector By default calculates distance
-	 * between two TermsVector 
-	 * 
 	 * @param input
 	 * @return
 	 */
-	public double eval(TermsVector input) {
-		return evalFunction().apply(this, input);
-	}
-
-	
-	private BiFunction<TermsVector, TermsVector, Double> evalFunction() {
-
-		return this.evalFunction;
-	}
-
-	public void setEvalFunction(BiFunction<TermsVector, TermsVector, Double> evalFunction) {
-		this.evalFunction = evalFunction;
+	public double eval(TermsVector input, BiFunction<TermsVector, TermsVector, Double> evalFunction) {
+		return evalFunction.apply(this, input);
 	}
 	
-	public static TermsVector emptyTermsVector() {
-		return new TermsVector();
-	}
 }

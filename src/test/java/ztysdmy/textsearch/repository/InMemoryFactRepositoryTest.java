@@ -8,38 +8,23 @@ import java.util.concurrent.CompletableFuture;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ztysdmy.textsearch.model.Document;
-import ztysdmy.textsearch.model.TermsVectorBuilder;
+import ztysdmy.textsearch.model.Fact;
 import ztysdmy.textsearch.model.TextSegment;
 import ztysdmy.textsearch.model.TextSegmentField;
 
-public class InMemoryTextRepositoryTest {
+public class InMemoryFactRepositoryTest {
 
 	
 	@Test
 	public void shouldGetAllDocuments() throws Exception {
 		
-		var textRepository = InMemoryTextRepository.instance();
+		var textRepository = InMemoryFactRepository.instance();
 		textRepository.clear();
 		var documents =  documents();
 		textRepository.populate(documents);
 		var  result = textRepository.get();
-		var array = result.toArray(new Document[0]);
+		var array = result.toArray(new Fact[0]);
 		Assert.assertEquals(2, array.length);
-	}
-	
-	@Test
-	public void shouldSortDocuments() throws Exception {
-		
-		var textRepository = InMemoryTextRepository.instance();
-		textRepository.clear();
-		var documents =  documents();
-		var array1 = documents.toArray(new Document[0]);
-		textRepository.populate(documents);
-		var request = TermsVectorBuilder.build(TextSegment.from("test1"));
-		var documents2 = textRepository.likelihood(request);
-		var array2 = documents2.toArray(new Document[0]);
-		Assert.assertEquals(array2[0].identifier(), array1[1].identifier());
 	}
 	
 	
@@ -48,12 +33,12 @@ public class InMemoryTextRepositoryTest {
 	public void shouldGetAllDocmentsInDifferentThreads() throws Exception {
 		
 		var documents = documents();
-		var textRepository = InMemoryTextRepository.instance();
+		var textRepository = InMemoryFactRepository.instance();
 		textRepository.clear();
 		var futureDocuments = CompletableFuture.supplyAsync(()->{
 			
 			@SuppressWarnings("unchecked")
-			Collection<Document> documentSet = Collections.EMPTY_LIST;
+			Collection<Fact> documentSet = Collections.EMPTY_LIST;
 
 			while (documentSet.isEmpty()) {
 				
@@ -78,15 +63,15 @@ public class InMemoryTextRepositoryTest {
 		Assert.assertTrue(!futureDocuments.get().isEmpty());
 	}
 	
-	private Collection<Document> documents() {
+	private Collection<Fact> documents() {
 
 		var result = List.of(document(TextSegment.from("test")), document(TextSegment.from("test1")));
 		return result;
 	}
 
-	private Document document(TextSegment textSegment) {
+	private Fact document(TextSegment textSegment) {
 		var field1 = new TextSegmentField("test", textSegment);
-		var document = new Document();
+		var document = new Fact();
 		document.addField(field1);
 		return document;
 	}

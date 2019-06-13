@@ -14,7 +14,6 @@ public class TermsVectorBuilder {
 
 	public static TermsVector build(TextSegmentField textSegmentField) {
 		TermsVector termsVector = build(textSegmentField.value(), 3);
-		termsVector.setEvalFunction(textSegmentField.evalFunction());
 		return termsVector;
 	}
 

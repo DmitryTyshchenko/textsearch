@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-public class Document implements Identifierable<Long> {
+public class Fact implements Identifierable<Long> {
 
 	private static final AtomicLong identifierGenerator = new AtomicLong();
 

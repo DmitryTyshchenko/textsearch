@@ -2,15 +2,15 @@ package ztysdmy.textsearh.repository.query;
 
 import java.util.Collection;
 
-import ztysdmy.textsearch.model.Document;
-import ztysdmy.textsearch.repository.TextRepository;
+import ztysdmy.textsearch.model.Fact;
+import ztysdmy.textsearch.repository.FactRepository;
 
 public class GetAllQuery implements Query {
 
 	@Override
-	public Collection<Document> query() {
+	public Collection<Fact> query() {
 		
-		return TextRepository.instance().get();
+		return FactRepository.instance().get();
 	}
 
 	

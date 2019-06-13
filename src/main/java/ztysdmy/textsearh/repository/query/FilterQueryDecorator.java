@@ -5,27 +5,27 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import ztysdmy.textsearch.model.Document;
+import ztysdmy.textsearch.model.Fact;
 
 public class FilterQueryDecorator extends QueryDecorator {
 
-	private Predicate<Document> predicate;
+	private Predicate<Fact> predicate;
 
-	public FilterQueryDecorator(Query query, List<Predicate<Document>> predicates) {
+	public FilterQueryDecorator(Query query, List<Predicate<Fact>> predicates) {
 		super(query);
 		this.predicate = toPredicate(predicates);
 	}
 
 	@Override
-	public Collection<Document> query() {
+	public Collection<Fact> query() {
 		return super.query().stream().filter(predicate).collect(Collectors.toList());
 	}
 
-	private Predicate<Document> toPredicate(List<Predicate<Document>> predicates) {
+	private Predicate<Fact> toPredicate(List<Predicate<Fact>> predicates) {
 
-		Predicate<Document> identity = document -> true;
+		Predicate<Fact> identity = document -> true;
 
-		for (Predicate<Document> predicate : predicates) {
+		for (Predicate<Fact> predicate : predicates) {
 
 			identity = identity.and(predicate);
 		}

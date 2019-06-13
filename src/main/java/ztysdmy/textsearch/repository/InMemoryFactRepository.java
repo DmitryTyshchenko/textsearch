@@ -2,41 +2,36 @@ package ztysdmy.textsearch.repository;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import ztysdmy.textsearch.model.Document;
-import ztysdmy.textsearch.model.TermsVector;
-import ztysdmy.textsearch.model.TextSegmentField;
+import ztysdmy.textsearch.model.Fact;
 
-import static ztysdmy.textsearch.model.TermsVectorBuilder.build;
 
-public class InMemoryTextRepository implements TextRepository {
+public class InMemoryFactRepository implements FactRepository {
 
-	private InMemoryTextRepository() {
+	private InMemoryFactRepository() {
 	};
 
-	private volatile static InMemoryTextRepository instance;
+	private volatile static InMemoryFactRepository instance;
 
-	public static InMemoryTextRepository instance() {
+	public static InMemoryFactRepository instance() {
 
 		if (instance == null) {
-			synchronized (InMemoryTextRepository.class) {
+			synchronized (InMemoryFactRepository.class) {
 				if (instance == null) {
-					instance = new InMemoryTextRepository();
+					instance = new InMemoryFactRepository();
 				}
 			}
 		}
 		return instance;
 	}
 
-	@Override
-	public Collection<Document> likelihood(TermsVector termsVector) {
+/**	@Override
+	public Collection<Fact> likelihood(TermsVector termsVector) {
 
 		return get(() -> {
 
@@ -61,11 +56,11 @@ public class InMemoryTextRepository implements TextRepository {
 		});
 
 	}
-
+**/
 	@Override
-	public Collection<Document> get() {
+	public Collection<Fact> get() {
 		
-		var localDocuments = documents;
+		var localDocuments = facts;
 		
 		return get(() -> {
 			return localDocuments.entrySet().stream().map(entry -> entry.getValue()).collect(Collectors.toList());
@@ -73,8 +68,8 @@ public class InMemoryTextRepository implements TextRepository {
 		});
 	}
 
-	private Collection<Document> get(Supplier<List<Document>> supplier) {
-		List<Document> result = new ArrayList<>();
+	private Collection<Fact> get(Supplier<List<Fact>> supplier) {
+		List<Fact> result = new ArrayList<>();
 		long stamp = readWriteLock.tryOptimisticRead();
 		
 		result = supplier.get();
@@ -96,20 +91,17 @@ public class InMemoryTextRepository implements TextRepository {
 
 	}
 
-	private volatile ArrayList<TermsVectorEntity> termsVectorEntities = new ArrayList<>();
-	private volatile HashMap<Long, Document> documents = new HashMap<>();
+	private volatile HashMap<Long, Fact> facts = new HashMap<>();
 
 	@Override
-	public void populate(Collection<Document> documents) {
+	public void populate(Collection<Fact> documents) {
 
-		ArrayList<TermsVectorEntity> LocaltermsVectorEntities = termsVectors(documents);
-		HashMap<Long, Document> localDocuments = documents(documents);
+		HashMap<Long, Fact> localFacts = facts(documents);
 
 		long stamp = readWriteLock.writeLock();
 		try {
 
-			this.documents = localDocuments;
-			this.termsVectorEntities = LocaltermsVectorEntities;
+			this.facts = localFacts;
 
 		} finally {
 			readWriteLock.unlockWrite(stamp);
@@ -117,17 +109,17 @@ public class InMemoryTextRepository implements TextRepository {
 
 	}
 
-	private HashMap<Long, Document> documents(Collection<Document> documents) {
+	private HashMap<Long, Fact> facts(Collection<Fact> facts) {
 
-		HashMap<Long, Document> localDocuments = new HashMap<>();
-		for (Document document : documents) {
+		HashMap<Long, Fact> localDocuments = new HashMap<>();
+		for (Fact document : facts) {
 			localDocuments.put(document.identifier(), document);
 		}
 
 		return localDocuments;
 	}
 
-	private ArrayList<TermsVectorEntity> termsVectors(Collection<Document> documents) {
+/**	private ArrayList<TermsVectorEntity> termsVectors(Collection<Fact> documents) {
 
 		ArrayList<TermsVectorEntity> LocaltermsVectorEntities = new ArrayList<>();
 
@@ -136,28 +128,28 @@ public class InMemoryTextRepository implements TextRepository {
 		});
 
 		return LocaltermsVectorEntities;
-	}
+	}**/
 
-	private List<TermsVectorEntity> termsVectors(Document document) {
+/**	private List<TermsVectorEntity> termsVectors(Fact document) {
 		List<TextSegmentField> textSegmentFields = document.textSegmentFields();
 		List<TermsVector> termsVectors = termsVectors(textSegmentFields);
 		List<TermsVectorEntity> termsVectorsEntities = termsVectorsEntities(document.identifier(), termsVectors);
 		return termsVectorsEntities;
-	}
+	}**/
 
-	private List<TermsVector> termsVectors(List<TextSegmentField> fields) {
+/**	private List<TermsVector> termsVectors(List<TextSegmentField> fields) {
 
 		return fields.stream().map(field -> build(field)).collect(Collectors.toList());
-	}
+	}**/
 
-	private List<TermsVectorEntity> termsVectorsEntities(Long documentId, List<TermsVector> termsVectors) {
+/**	private List<TermsVectorEntity> termsVectorsEntities(Long documentId, List<TermsVector> termsVectors) {
 
 		return termsVectors.stream().map(termsVector -> new TermsVectorEntity(termsVector, documentId))
 				.collect(Collectors.toList());
 
 	}
-
-	private static class TermsVectorEntity {
+**/
+/**	private static class TermsVectorEntity {
 
 		final TermsVector termsVector;
 		final Long documentId;
@@ -167,8 +159,8 @@ public class InMemoryTextRepository implements TextRepository {
 			this.documentId = documentId;
 		}
 	}
-
-	private static class TermsVectorEntityWithWeight {
+**/
+	/**private static class TermsVectorEntityWithWeight {
 		final TermsVectorEntity termsVectorEntity;
 		final Double weight;
 
@@ -195,16 +187,15 @@ public class InMemoryTextRepository implements TextRepository {
 
 		}
 
-	}
+	}**/
 
 	private final StampedLock readWriteLock = new StampedLock();
 
-	private final Comparator<TermsVectorEntityWithWeight> termsVectorWithWeightComparator = (a, b) -> a.weight < b.weight ? 1
-			: a.weight == b.weight ? 0 : -1;
+	//private final Comparator<TermsVectorEntityWithWeight> termsVectorWithWeightComparator = (a, b) -> a.weight < b.weight ? 1
+	//		: a.weight == b.weight ? 0 : -1;
 
 	@Override
 	public void clear() {
-		 this.termsVectorEntities = new ArrayList<>();
-		 this.documents = new HashMap<>();
+		 this.facts = new HashMap<>();
 	}
 }

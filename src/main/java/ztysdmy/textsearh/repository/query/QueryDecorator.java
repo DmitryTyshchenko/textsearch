@@ -2,7 +2,7 @@ package ztysdmy.textsearh.repository.query;
 
 import java.util.Collection;
 
-import ztysdmy.textsearch.model.Document;
+import ztysdmy.textsearch.model.Fact;
 
 public abstract class QueryDecorator implements Query {
 
@@ -14,7 +14,7 @@ public abstract class QueryDecorator implements Query {
 	}
 	
 	@Override
-	public Collection<Document> query() {
+	public Collection<Fact> query() {
 		return query.query();
 	}
 }
