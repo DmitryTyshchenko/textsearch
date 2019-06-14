@@ -32,18 +32,18 @@ public class KNeighborEstimatorImpl implements KNeighborEstimator {
 
 		var toEvalTermsVector = TermsVectorBuilder.build(input, this.complexity);
 
-		Collection<Fact> facts = facts();
+		var facts = facts();
 		ArrayList<LikelihoodResult> result = new ArrayList<>();
 
 		for (Fact fact : facts) {
 
 			var termsVector = TermsVectorBuilder.build(fact, this.complexity);
 
-			Double weight = termsVector.eval(toEvalTermsVector, estimationFunction);
+			Double weight = termsVector.eval(toEvalTermsVector, this.estimationFunction);
 			result.add(new LikelihoodResult(fact, weight));
 
 		}
-		Collections.sort(result, resultComparator);
+		Collections.sort(result, this.resultComparator);
 		return result;
 	}
 

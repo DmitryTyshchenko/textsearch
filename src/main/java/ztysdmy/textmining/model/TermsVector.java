@@ -3,6 +3,7 @@ package ztysdmy.textmining.model;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class TermsVector {
 
@@ -41,6 +42,10 @@ public class TermsVector {
 	 */
 	public double eval(TermsVector input, BiFunction<TermsVector, TermsVector, Double> evalFunction) {
 		return evalFunction.apply(this, input);
+	}
+	
+	public double eval(Function<TermsVector, Double> evalFunction) {
+		return  evalFunction.apply(this);
 	}
 	
 }
