@@ -16,7 +16,7 @@ public class FactTest {
 	@Test
 	public void shouldCollectTextProviders() throws Exception {
 		Fact document = fact();
-		List<TextField> textProviders = document.textSegmentFields();
+		List<TextField> textProviders = document.textFields();
 		Assert.assertEquals(1, textProviders.size());
 	}
 	

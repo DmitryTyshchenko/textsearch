@@ -25,7 +25,7 @@ public class TermsVectorBuilder {
 	 */
 	public static TermsVector build(Fact fact, int complexity) {
 
-		var textSegmentFields = fact.textSegmentFields();
+		var textSegmentFields = fact.textFields();
 		
 		var result = new TermsVector();
 

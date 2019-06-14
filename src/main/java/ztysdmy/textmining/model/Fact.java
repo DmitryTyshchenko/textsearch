@@ -24,7 +24,7 @@ public class Fact implements Identifierable<Long> {
 	}
 
 	
-	public List<TextField> textSegmentFields() {
+	public List<TextField> textFields() {
 
 		return fields.entrySet().stream()
 				.filter(entry -> TextField.class.isAssignableFrom(entry.getValue().getClass()))
