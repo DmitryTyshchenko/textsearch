@@ -17,9 +17,29 @@ public class TermsVectorBuilder {
 		return termsVector;
 	}
 
-	public static TermsVector build(TextProvider textProvider, int complexity) {
+	/**
+	 * Builds TermsVector from all TextFields of Fact
+	 * @param fact
+	 * @param complexity
+	 * @return
+	 */
+	public static TermsVector build(Fact fact, int complexity) {
 
-		TermsVector result = new TermsVector();
+		var textSegmentFields = fact.textSegmentFields();
+		
+		var result = new TermsVector();
+
+		for (TextSegmentField textSegmentField : textSegmentFields) {
+
+			var textProvider = textSegmentField.value();
+
+			build(textProvider, complexity, result);
+		}
+
+		return result;
+	}
+
+	private static void build(TextProvider textProvider, int complexity, TermsVector result) {
 
 		String candidates[] = splitSegmentValuesToWords.andThen(normilizer).apply(textProvider.text());
 
@@ -29,6 +49,12 @@ public class TermsVectorBuilder {
 			createComplexTerms(result, candidates, complexity, i);
 		}
 
+	}
+
+	public static TermsVector build(TextProvider textProvider, int complexity) {
+
+		var result = new TermsVector();
+		build(textProvider, complexity, result);
 		return result;
 	}
 

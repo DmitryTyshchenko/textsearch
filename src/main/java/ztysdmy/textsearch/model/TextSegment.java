@@ -1,18 +1,11 @@
 package ztysdmy.textsearch.model;
 
-import java.util.concurrent.atomic.AtomicLong;
-
-public class TextSegment implements Identifierable<Long>, TextProvider {
+public class TextSegment implements TextProvider {
 
 	private String value;
 
-	private static final AtomicLong identifierGenerator = new AtomicLong();
-
-	private final Long identifier;
-
 	public TextSegment(String value) {
 		this.value = value;
-		identifier = identifierGenerator.incrementAndGet();
 	}
 
 	// Utility methods to create Text Segments
@@ -28,12 +21,6 @@ public class TextSegment implements Identifierable<Long>, TextProvider {
 
 	public void setValue(String value) {
 		this.value = value;
-	}
-
-	@Override
-	public Long identifier() {
-
-		return this.identifier;
 	}
 
 	@Override

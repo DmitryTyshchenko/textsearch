@@ -13,7 +13,7 @@ import ztysdmy.textsearch.model.TextSegment;
 import ztysdmy.textsearch.model.TextSegmentField;
 import ztysdmy.textsearch.repository.FactRepository;
 import ztysdmy.textsearh.repository.query.FilterQueryDecorator;
-import ztysdmy.textsearh.repository.query.GetAllQuery;
+import ztysdmy.textsearh.repository.query.GetAllFactsQuery;
 
 public class QueryTest {
 
@@ -21,7 +21,7 @@ public class QueryTest {
 	public void shouldSiftAllResults() throws Exception {
 
 		clearAndPopulateTextRepository();
-		var query = new FilterQueryDecorator(new GetAllQuery(), List.of(document -> false));
+		var query = new FilterQueryDecorator(new GetAllFactsQuery(), List.of(document -> false));
 		var queryResult = query.query();
 		Assert.assertEquals(true, queryResult.isEmpty());
 	}
