@@ -31,11 +31,10 @@ public class KNeighborEstimatorImpl implements KNeighborEstimator {
 	public Collection<LikelihoodResult> likelihood(Fact input) {
 
 		var toEvalTermsVector = TermsVectorBuilder.build(input, this.complexity);
-
-		var facts = facts();
+		
 		ArrayList<LikelihoodResult> result = new ArrayList<>();
 
-		for (Fact fact : facts) {
+		for (Fact fact : facts()) {
 
 			var termsVector = TermsVectorBuilder.build(fact, this.complexity);
 
