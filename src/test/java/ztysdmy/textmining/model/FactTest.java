@@ -8,15 +8,15 @@ import org.junit.Test;
 
 import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.Field;
-import ztysdmy.textmining.model.TextSegment;
-import ztysdmy.textmining.model.TextSegmentField;
+import ztysdmy.textmining.model.Text;
+import ztysdmy.textmining.model.TextField;
 
 public class FactTest {
 
 	@Test
 	public void shouldCollectTextProviders() throws Exception {
 		Fact document = fact();
-		List<TextSegmentField> textProviders = document.textSegmentFields();
+		List<TextField> textProviders = document.textSegmentFields();
 		Assert.assertEquals(1, textProviders.size());
 	}
 	
@@ -34,7 +34,7 @@ public class FactTest {
 
 	private Fact fact() {
 
-		Field<TextSegment> field1 = new TextSegmentField("test", TextSegment.from("test"));
+		Field<Text> field1 = new TextField("test", Text.from("test"));
 		Field<Long> field2 = new Field<>("test2", 1l);
 		Fact fact = new Fact();
 		fact.addField(field1);

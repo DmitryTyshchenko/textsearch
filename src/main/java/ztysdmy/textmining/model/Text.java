@@ -1,17 +1,17 @@
 package ztysdmy.textmining.model;
 
-public class TextSegment implements TextProvider {
+public class Text implements TextProvider {
 
 	private String value;
 
-	public TextSegment(String value) {
+	public Text(String value) {
 		this.value = value;
 	}
 
 	// Utility methods to create Text Segments
-	public static TextSegment from(String value) {
+	public static Text from(String value) {
 
-		TextSegment result = new TextSegment(value);
+		Text result = new Text(value);
 		return result;
 	}
 

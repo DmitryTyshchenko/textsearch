@@ -9,8 +9,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ztysdmy.textmining.model.Fact;
-import ztysdmy.textmining.model.TextSegment;
-import ztysdmy.textmining.model.TextSegmentField;
+import ztysdmy.textmining.model.Text;
+import ztysdmy.textmining.model.TextField;
 import ztysdmy.textmining.repository.InMemoryFactRepository;
 
 public class InMemoryFactRepositoryTest {
@@ -66,12 +66,12 @@ public class InMemoryFactRepositoryTest {
 	
 	private Collection<Fact> documents() {
 
-		var result = List.of(document(TextSegment.from("test")), document(TextSegment.from("test1")));
+		var result = List.of(document(Text.from("test")), document(Text.from("test1")));
 		return result;
 	}
 
-	private Fact document(TextSegment textSegment) {
-		var field1 = new TextSegmentField("test", textSegment);
+	private Fact document(Text textSegment) {
+		var field1 = new TextField("test", textSegment);
 		var document = new Fact();
 		document.addField(field1);
 		return document;

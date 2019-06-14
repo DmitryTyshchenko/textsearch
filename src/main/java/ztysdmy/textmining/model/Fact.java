@@ -24,11 +24,11 @@ public class Fact implements Identifierable<Long> {
 	}
 
 	
-	public List<TextSegmentField> textSegmentFields() {
+	public List<TextField> textSegmentFields() {
 
 		return fields.entrySet().stream()
-				.filter(entry -> TextSegmentField.class.isAssignableFrom(entry.getValue().getClass()))
-				.map(entry -> (TextSegmentField) entry.getValue()).collect(Collectors.toList());
+				.filter(entry -> TextField.class.isAssignableFrom(entry.getValue().getClass()))
+				.map(entry -> (TextField) entry.getValue()).collect(Collectors.toList());
 	}
 	
 }

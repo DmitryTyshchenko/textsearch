@@ -12,7 +12,7 @@ public class TermsVectorBuilder {
 		return build(textProvider, 3);
 	}
 
-	public static TermsVector build(TextSegmentField textSegmentField) {
+	public static TermsVector build(TextField textSegmentField) {
 		TermsVector termsVector = build(textSegmentField.value(), 3);
 		return termsVector;
 	}
@@ -29,7 +29,7 @@ public class TermsVectorBuilder {
 		
 		var result = new TermsVector();
 
-		for (TextSegmentField textSegmentField : textSegmentFields) {
+		for (TextField textSegmentField : textSegmentFields) {
 
 			var textProvider = textSegmentField.value();
 
