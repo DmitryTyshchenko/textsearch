@@ -5,8 +5,8 @@ import java.util.Collection;
 import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.LikelihoodResult;
 
-public interface KNeighborEstimator {
+public interface KNeighborEstimator<T> {
 	
-	Collection<LikelihoodResult> likelihood(Fact fact);
+	Collection<LikelihoodResult<T>> likelihood(Fact<T> fact);
 
 }

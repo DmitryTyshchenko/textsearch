@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import ztysdmy.textmining.model.Fact;
 
-public interface Query {
+public interface Query<T> {
 
-	Collection<Fact> query();
+	Collection<Fact<T>> query();
 }

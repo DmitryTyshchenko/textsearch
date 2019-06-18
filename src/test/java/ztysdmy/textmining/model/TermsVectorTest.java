@@ -7,7 +7,6 @@ import org.junit.Test;
 import ztysdmy.textmining.distance.TanimotoDistance;
 import ztysdmy.textmining.model.TermsVector;
 import ztysdmy.textmining.model.TermsVectorBuilder;
-import ztysdmy.textmining.model.Text;
 
 public class TermsVectorTest {
 
@@ -45,8 +44,8 @@ public class TermsVectorTest {
 	//2 termsVectors should not be equal
 	@Test
 	public void shouldCalculateDistance2() throws Exception {
-		var termsVector1 = TermsVectorBuilder.build(Text.from("test"), 0);
-		var termsVector2 = TermsVectorBuilder.build(Text.from("test2"), 0);
+		var termsVector1 = TermsVectorBuilder.build("test", 0);
+		var termsVector2 = TermsVectorBuilder.build("test2", 0);
 		var distance = termsVector1.eval(termsVector2,new TanimotoDistance());
 		assertEquals(0.d, distance, 0.d);
 	}

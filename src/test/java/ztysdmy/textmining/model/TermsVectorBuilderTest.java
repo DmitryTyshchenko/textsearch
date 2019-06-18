@@ -4,14 +4,13 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ztysdmy.textmining.model.TermsVectorBuilder;
-import ztysdmy.textmining.model.Text;
 
 public class TermsVectorBuilderTest {
 
 	@Test
 	public void shouldCreateTermsVector1() throws Exception {
-		var segment = Text.from("This is a some test sentence!");
-		var termsVector = TermsVectorBuilder.build(segment);
+		var segment = "This is a some test sentence!";
+		var termsVector = TermsVectorBuilder.build(segment, 3);
 		termsVector.getTerm("is a").orElseThrow(() -> new RuntimeException("is a Not found"));
 		termsVector.getTerm("a some test").orElseThrow(() -> new RuntimeException("a some Test Not found"));
 		termsVector.getTerm("test").orElseThrow(() -> new RuntimeException("test Not found"));

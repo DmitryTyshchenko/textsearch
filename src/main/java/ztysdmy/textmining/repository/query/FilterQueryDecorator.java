@@ -7,29 +7,28 @@ import java.util.stream.Collectors;
 
 import ztysdmy.textmining.model.Fact;
 
-public class FilterQueryDecorator extends QueryDecorator {
+public class FilterQueryDecorator<T> extends QueryDecorator<T> {
 
-	private Predicate<Fact> predicate;
+	private Predicate<Fact<T>> predicate;
 
-	public FilterQueryDecorator(Query query, List<Predicate<Fact>> predicates) {
+	public FilterQueryDecorator(Query<T> query, List<Predicate<Fact<T>>> predicates) {
 		super(query);
 		this.predicate = toPredicate(predicates);
 	}
 
 	@Override
-	public Collection<Fact> query() {
+	public Collection<Fact<T>> query() {
 		return super.query().stream().filter(predicate).collect(Collectors.toList());
 	}
 
-	private Predicate<Fact> toPredicate(List<Predicate<Fact>> predicates) {
+	private Predicate<Fact<T>> toPredicate(List<Predicate<Fact<T>>> predicates) {
 
-		Predicate<Fact> identity = document -> true;
+		Predicate<Fact<T>> identity = document -> true;
 
-		for (Predicate<Fact> predicate : predicates) {
+		for (Predicate<Fact<T>> predicate : predicates) {
 
 			identity = identity.and(predicate);
 		}
-
 		return identity;
 	}
 }

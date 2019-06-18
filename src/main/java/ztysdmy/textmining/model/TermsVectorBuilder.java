@@ -8,40 +8,23 @@ public class TermsVectorBuilder {
 	private TermsVectorBuilder() {
 	}
 
-	public static TermsVector build(TextProvider textProvider) {
-		return build(textProvider, 3);
-	}
-
-	public static TermsVector build(TextField textSegmentField) {
-		TermsVector termsVector = build(textSegmentField.value(), 3);
-		return termsVector;
-	}
-
 	/**
 	 * Builds TermsVector from all TextFields of Fact
+	 * 
 	 * @param fact
 	 * @param complexity
 	 * @return
 	 */
-	public static TermsVector build(Fact fact, int complexity) {
-
-		var textSegmentFields = fact.textFields();
-		
+	public static TermsVector build(Fact<?> fact, int complexity) {
+		var textProvider = fact.value();
 		var result = new TermsVector();
-
-		for (TextField textSegmentField : textSegmentFields) {
-
-			var textProvider = textSegmentField.value();
-
-			build(textProvider, complexity, result);
-		}
-
+		build(textProvider, complexity, result);
 		return result;
 	}
 
-	private static void build(TextProvider textProvider, int complexity, TermsVector result) {
+	private static void build(String textProvider, int complexity, TermsVector result) {
 
-		String candidates[] = splitSegmentValuesToWords.andThen(normilizer).apply(textProvider.text());
+		String candidates[] = splitSegmentValuesToWords.andThen(normilizer).apply(textProvider);
 
 		for (int i = 0; i < candidates.length; i++) {
 			var value = candidates[i];
@@ -51,7 +34,7 @@ public class TermsVectorBuilder {
 
 	}
 
-	public static TermsVector build(TextProvider textProvider, int complexity) {
+	public static TermsVector build(String textProvider, int complexity) {
 
 		var result = new TermsVector();
 		build(textProvider, complexity, result);

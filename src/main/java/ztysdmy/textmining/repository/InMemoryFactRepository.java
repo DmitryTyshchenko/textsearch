@@ -10,27 +10,13 @@ import java.util.stream.Collectors;
 
 import ztysdmy.textmining.model.Fact;
 
-public class InMemoryFactRepository implements FactRepository {
+public class InMemoryFactRepository<T> implements FactRepository<T> {
 
-	private InMemoryFactRepository() {
+	public InMemoryFactRepository() {
 	};
 
-	private volatile static InMemoryFactRepository instance;
-
-	public static InMemoryFactRepository instance() {
-
-		if (instance == null) {
-			synchronized (InMemoryFactRepository.class) {
-				if (instance == null) {
-					instance = new InMemoryFactRepository();
-				}
-			}
-		}
-		return instance;
-	}
-
 	@Override
-	public Collection<Fact> get() {
+	public Collection<Fact<T>> get() {
 
 		var localDocuments = facts;
 
@@ -40,8 +26,8 @@ public class InMemoryFactRepository implements FactRepository {
 		});
 	}
 
-	private Collection<Fact> get(Supplier<List<Fact>> supplier) {
-		List<Fact> result = new ArrayList<>();
+	private Collection<Fact<T>> get(Supplier<List<Fact<T>>> supplier) {
+		List<Fact<T>> result = new ArrayList<>();
 		long stamp = readWriteLock.tryOptimisticRead();
 
 		result = supplier.get();
@@ -63,12 +49,12 @@ public class InMemoryFactRepository implements FactRepository {
 
 	}
 
-	private volatile HashMap<Long, Fact> facts = new HashMap<>();
+	private volatile HashMap<Long, Fact<T>> facts = new HashMap<>();
 
 	@Override
-	public void populate(Collection<Fact> documents) {
+	public void populate(Collection<Fact<T>> facts) {
 
-		HashMap<Long, Fact> localFacts = facts(documents);
+		HashMap<Long, Fact<T>> localFacts = facts(facts);
 
 		long stamp = readWriteLock.writeLock();
 		try {
@@ -81,16 +67,15 @@ public class InMemoryFactRepository implements FactRepository {
 
 	}
 
-	private HashMap<Long, Fact> facts(Collection<Fact> facts) {
+	private HashMap<Long, Fact<T>> facts(Collection<Fact<T>> facts) {
 
-		HashMap<Long, Fact> localFacts = new HashMap<>();
-		for (Fact fact : facts) {
+		HashMap<Long, Fact<T>> localFacts = new HashMap<>();
+		for (Fact<T> fact : facts) {
 			localFacts.put(fact.identifier(), fact);
 		}
 
 		return localFacts;
 	}
-	
 
 	private final StampedLock readWriteLock = new StampedLock();
 

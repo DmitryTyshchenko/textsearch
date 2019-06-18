@@ -9,8 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ztysdmy.textmining.model.Fact;
-import ztysdmy.textmining.model.Text;
-import ztysdmy.textmining.model.TextField;
+import ztysdmy.textmining.model.Target;
 import ztysdmy.textmining.repository.InMemoryFactRepository;
 
 public class InMemoryFactRepositoryTest {
@@ -19,10 +18,10 @@ public class InMemoryFactRepositoryTest {
 	@Test
 	public void shouldGetAllDocuments() throws Exception {
 		
-		var textRepository = InMemoryFactRepository.instance();
+		var textRepository = new InMemoryFactRepository<Double>();
 		textRepository.clear();
-		var documents =  documents();
-		textRepository.populate(documents);
+		var facts =  facts();
+		textRepository.populate(facts);
 		var  result = textRepository.get();
 		var array = result.toArray(new Fact[0]);
 		Assert.assertEquals(2, array.length);
@@ -33,13 +32,13 @@ public class InMemoryFactRepositoryTest {
 	@Test
 	public void shouldGetAllDocmentsInDifferentThreads() throws Exception {
 		
-		var documents = documents();
-		var textRepository = InMemoryFactRepository.instance();
+		var documents = facts();
+		var textRepository = new InMemoryFactRepository<Double>();
 		textRepository.clear();
 		var futureDocuments = CompletableFuture.supplyAsync(()->{
 			
 			@SuppressWarnings("unchecked")
-			Collection<Fact> documentSet = Collections.EMPTY_LIST;
+			Collection<Fact<Double>> documentSet = Collections.EMPTY_LIST;
 
 			while (documentSet.isEmpty()) {
 				
@@ -64,16 +63,15 @@ public class InMemoryFactRepositoryTest {
 		Assert.assertTrue(!futureDocuments.get().isEmpty());
 	}
 	
-	private Collection<Fact> documents() {
+	private Collection<Fact<Double>> facts() {
 
-		var result = List.of(document(Text.from("test")), document(Text.from("test1")));
+		var result = List.of(fact("test"), fact("test1"));
 		return result;
 	}
 
-	private Fact document(Text textSegment) {
-		var field1 = new TextField("test", textSegment);
-		var document = new Fact();
-		document.addField(field1);
+	private Fact<Double> fact(String value) {
+		var document = new Fact<Double>(value, new Target<Double>(1.d));
+		
 		return document;
 	}
 
