@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.BiFunction;
 
 import ztysdmy.textmining.model.Fact;
@@ -29,7 +30,7 @@ public class KNeighborEstimatorImpl<T> implements KNeighborEstimator<T> {
 
 
 	@Override
-	public Collection<LikelihoodResult<T>> likelihood(Fact<T> input) {
+	public List<LikelihoodResult<T>> likelihood(Fact<T> input) {
 
 		var toEvalTermsVector = TermsVectorBuilder.build(input, this.complexity);
 		

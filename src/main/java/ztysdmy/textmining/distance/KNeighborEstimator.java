@@ -1,12 +1,12 @@
 package ztysdmy.textmining.distance;
 
-import java.util.Collection;
+import java.util.List;
 
 import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.LikelihoodResult;
 
 public interface KNeighborEstimator<T> {
 	
-	Collection<LikelihoodResult<T>> likelihood(Fact<T> fact);
+	List<LikelihoodResult<T>> likelihood(Fact<T> fact);
 
 }
