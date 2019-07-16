@@ -10,13 +10,13 @@ import java.util.stream.Collectors;
 
 import ztysdmy.textmining.model.Fact;
 
-public class InMemoryFactRepository<T> implements FactRepository<T> {
+public class InMemoryFactsRepository<T> implements FactsRepository<T> {
 
-	public InMemoryFactRepository() {
+	public InMemoryFactsRepository() {
 	};
 
 	@Override
-	public Collection<Fact<T>> get() {
+	public Collection<Fact<T>> getAll() {
 
 		var localDocuments = facts;
 

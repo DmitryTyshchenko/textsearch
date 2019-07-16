@@ -11,18 +11,18 @@ import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.LikelihoodResult;
 import ztysdmy.textmining.model.TermsVector;
 import ztysdmy.textmining.model.TermsVectorBuilder;
-import ztysdmy.textmining.repository.FactRepository;
+import ztysdmy.textmining.repository.FactsRepository;
 import ztysdmy.textmining.repository.query.GetAllFactsQuery;
 
 public class KNeighborEstimatorImpl<T> implements KNeighborEstimator<T> {
 
 	private final BiFunction<TermsVector, TermsVector, Double> estimationFunction;
 
-	private FactRepository<T> factsRespository;
+	private FactsRepository<T> factsRespository;
 	
 	int complexity;
 
-	public KNeighborEstimatorImpl(FactRepository<T> factsRespository, BiFunction<TermsVector, TermsVector, Double> estimationFunction, int complexity) {
+	public KNeighborEstimatorImpl(FactsRepository<T> factsRespository, BiFunction<TermsVector, TermsVector, Double> estimationFunction, int complexity) {
 		this.estimationFunction = estimationFunction;
 		this.complexity = complexity;
 		this.factsRespository = factsRespository;

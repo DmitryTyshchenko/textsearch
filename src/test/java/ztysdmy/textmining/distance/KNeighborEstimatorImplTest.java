@@ -7,8 +7,8 @@ import org.junit.Test;
 
 import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.Target;
-import ztysdmy.textmining.repository.FactRepository;
-import ztysdmy.textmining.repository.InMemoryFactRepository;
+import ztysdmy.textmining.repository.FactsRepository;
+import ztysdmy.textmining.repository.InMemoryFactsRepository;
 
 public class KNeighborEstimatorImplTest {
 
@@ -20,13 +20,13 @@ public class KNeighborEstimatorImplTest {
 	@Test
 	public void shouldCorrectlyClasify() throws Exception {
 
-		FactRepository<String> factRepository = new InMemoryFactRepository<>();
+		FactsRepository<String> factRepository = new InMemoryFactsRepository<>();
 
 		List<Fact<String>> facts = List.of(fact("some test text", "classA"),
 				fact("should be correct text for classification", "classB"));
 		factRepository.populate(facts);
 
-		KNeighborEstimator<String> estimator = new KNeighborEstimatorImpl<>(factRepository, new TanimotoDistance(), 2);
+		KNeighborEstimator<String> estimator = new KNeighborEstimatorImpl<>(factRepository, new TanimotoDistance(), 1);
 
 		Fact<String> toEval = new Fact<>("correct text");
 

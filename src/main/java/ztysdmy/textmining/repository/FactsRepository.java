@@ -4,11 +4,11 @@ import java.util.Collection;
 
 import ztysdmy.textmining.model.Fact;
 
-public interface FactRepository<T> {
+public interface FactsRepository<T> {
 
-	Collection<Fact<T>> get();
+	Collection<Fact<T>> getAll();
 
-	void populate(Collection<Fact<T>> documents);
+	void populate(Collection<Fact<T>> facts);
 
 	void clear();
 	

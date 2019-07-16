@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.Target;
-import ztysdmy.textmining.repository.InMemoryFactRepository;
+import ztysdmy.textmining.repository.InMemoryFactsRepository;
 
 public class InMemoryFactRepositoryTest {
 
@@ -18,11 +18,11 @@ public class InMemoryFactRepositoryTest {
 	@Test
 	public void shouldGetAllDocuments() throws Exception {
 		
-		var textRepository = new InMemoryFactRepository<Double>();
+		var textRepository = new InMemoryFactsRepository<Double>();
 		textRepository.clear();
 		var facts =  facts();
 		textRepository.populate(facts);
-		var  result = textRepository.get();
+		var  result = textRepository.getAll();
 		var array = result.toArray(new Fact[0]);
 		Assert.assertEquals(2, array.length);
 	}
@@ -33,7 +33,7 @@ public class InMemoryFactRepositoryTest {
 	public void shouldGetAllDocmentsInDifferentThreads() throws Exception {
 		
 		var documents = facts();
-		var textRepository = new InMemoryFactRepository<Double>();
+		var textRepository = new InMemoryFactsRepository<Double>();
 		textRepository.clear();
 		var futureDocuments = CompletableFuture.supplyAsync(()->{
 			
@@ -42,7 +42,7 @@ public class InMemoryFactRepositoryTest {
 
 			while (documentSet.isEmpty()) {
 				
-				documentSet = textRepository.get();
+				documentSet = textRepository.getAll();
 			}
 			
 			return documentSet;

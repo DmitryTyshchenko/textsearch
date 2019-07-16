@@ -9,8 +9,8 @@ import org.junit.Test;
 
 import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.Target;
-import ztysdmy.textmining.repository.FactRepository;
-import ztysdmy.textmining.repository.InMemoryFactRepository;
+import ztysdmy.textmining.repository.FactsRepository;
+import ztysdmy.textmining.repository.InMemoryFactsRepository;
 import ztysdmy.textmining.repository.query.FilterQueryDecorator;
 import ztysdmy.textmining.repository.query.GetAllFactsQuery;
 
@@ -19,7 +19,7 @@ public class QueryTest {
 	@Test
 	public void shouldSiftAllResults() throws Exception {
 
-		FactRepository<Double> factRepository = new InMemoryFactRepository<>();
+		FactsRepository<Double> factRepository = new InMemoryFactsRepository<>();
 		factRepository.populate(facts());
 		var query = new FilterQueryDecorator<Double>(new GetAllFactsQuery<Double>(factRepository), List.of(document -> false));
 		var queryResult = query.query();
