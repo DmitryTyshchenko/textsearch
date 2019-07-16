@@ -1,4 +1,4 @@
-package ztysdmy.textmining.distance;
+package ztysdmy.textmining.classifier;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +14,7 @@ import ztysdmy.textmining.model.TermsVectorBuilder;
 import ztysdmy.textmining.repository.FactsRepository;
 import ztysdmy.textmining.repository.query.GetAllFactsQuery;
 
-public class KNeighborEstimatorImpl<T> implements KNeighborEstimator<T> {
+public class KNeighborEstimatorImpl<T> implements Classifier<T> {
 
 	private final BiFunction<TermsVector, TermsVector, Double> estimationFunction;
 

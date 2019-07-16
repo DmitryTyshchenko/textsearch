@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import ztysdmy.textmining.distance.TanimotoDistance;
+import ztysdmy.textmining.classifier.TanimotoDistance;
 import ztysdmy.textmining.model.TermsVector;
 import ztysdmy.textmining.model.TermsVectorBuilder;
 
