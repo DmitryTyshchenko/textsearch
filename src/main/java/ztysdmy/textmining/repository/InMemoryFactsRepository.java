@@ -1,9 +1,7 @@
 package ztysdmy.textmining.repository;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -17,31 +15,22 @@ public class InMemoryFactsRepository<T> implements FactsRepository<T> {
 
 	@Override
 	public Collection<Fact<T>> getAll() {
-
-		var localDocuments = facts;
-
-		return get(() -> {
-			return localDocuments.entrySet().stream().map(entry -> entry.getValue()).collect(Collectors.toList());
-
+		var localFacts = facts;
+		return doWithOptimisticRead(() -> {
+			return localFacts.entrySet().stream().map(entry -> entry.getValue()).collect(Collectors.toList());
 		});
 	}
 
-	private Collection<Fact<T>> get(Supplier<List<Fact<T>>> supplier) {
-		List<Fact<T>> result = new ArrayList<>();
+	private <R> R doWithOptimisticRead(Supplier<R> supplier) {
+
 		long stamp = readWriteLock.tryOptimisticRead();
-
-		result = supplier.get();
-
+		R result = supplier.get();
 		if (readWriteLock.validate(stamp)) {
 			return result;
 		}
-
 		stamp = readWriteLock.readLock();
-
 		try {
-
 			result = supplier.get();
-
 		} finally {
 			readWriteLock.unlockRead(stamp);
 		}
@@ -87,5 +76,10 @@ public class InMemoryFactsRepository<T> implements FactsRepository<T> {
 		} finally {
 			readWriteLock.unlockWrite(stamp);
 		}
+	}
+
+	@Override
+	public int size() {
+		return doWithOptimisticRead(() -> facts.size());
 	}
 }

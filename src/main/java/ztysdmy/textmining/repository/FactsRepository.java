@@ -12,4 +12,5 @@ public interface FactsRepository<T> {
 
 	void clear();
 	
+	int size();
 }
