@@ -5,8 +5,8 @@ public class LikelihoodResult<T> {
 	private final Fact<T> fact;
 	private final Double probability;
 	
-	public LikelihoodResult(Fact<T> document, Double probability) {
-		this.fact = document;
+	public LikelihoodResult(Fact<T> fact, Double probability) {
+		this.fact = fact;
 		this.probability = probability;
 	}
 

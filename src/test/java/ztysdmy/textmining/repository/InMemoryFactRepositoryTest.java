@@ -14,55 +14,52 @@ import ztysdmy.textmining.repository.InMemoryFactsRepository;
 
 public class InMemoryFactRepositoryTest {
 
-	
 	@Test
 	public void shouldGetAllDocuments() throws Exception {
-		
+
 		var textRepository = new InMemoryFactsRepository<Double>();
 		textRepository.clear();
-		var facts =  facts();
+		var facts = facts();
 		textRepository.populate(facts);
-		var  result = textRepository.getAll();
+		var result = textRepository.getAll();
 		var array = result.toArray(new Fact[0]);
 		Assert.assertEquals(2, array.length);
 	}
-	
-	
+
 	@SuppressWarnings("static-access")
 	@Test
 	public void shouldGetAllDocmentsInDifferentThreads() throws Exception {
-		
+
 		var documents = facts();
 		var textRepository = new InMemoryFactsRepository<Double>();
 		textRepository.clear();
-		var futureDocuments = CompletableFuture.supplyAsync(()->{
-			
+		var futureDocuments = CompletableFuture.supplyAsync(() -> {
+
 			@SuppressWarnings("unchecked")
 			Collection<Fact<Double>> documentSet = Collections.EMPTY_LIST;
 
 			while (documentSet.isEmpty()) {
-				
+
 				documentSet = textRepository.getAll();
 			}
-			
+
 			return documentSet;
 		});
-		
-		
-		CompletableFuture.runAsync(()->{
+
+		CompletableFuture.runAsync(() -> {
 			try {
 				Thread.currentThread().sleep(2000);
-				
+
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			textRepository.populate(documents);
 		});
-		
+
 		Assert.assertTrue(!futureDocuments.get().isEmpty());
 	}
-	
+
 	private Collection<Fact<Double>> facts() {
 
 		var result = List.of(fact("test"), fact("test1"));
@@ -71,8 +68,17 @@ public class InMemoryFactRepositoryTest {
 
 	private Fact<Double> fact(String value) {
 		var document = new Fact<Double>(value, new Target<Double>(1.d));
-		
+
 		return document;
+	}
+
+	@Test
+	public void shouldGetSize() throws Exception {
+		var textRepository = new InMemoryFactsRepository<Double>();
+		textRepository.clear();
+		textRepository.populate(facts());
+		var size = textRepository.size();
+		Assert.assertEquals(2, size);
 	}
 
 }
