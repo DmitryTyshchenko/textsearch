@@ -77,10 +77,11 @@ public class InMemoryFactsRepository<T> implements FactsRepository<T> {
 	}
 
 
-
 	@Override
-	public Iterator<Fact<T>> iterator() {
+	public RepositoryIterator<T> iterator() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	
 }
