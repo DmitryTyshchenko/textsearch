@@ -1,6 +1,5 @@
 package ztysdmy.textmining.repository;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import ztysdmy.textmining.model.Fact;
@@ -40,20 +39,7 @@ public class LearningFactsRepositoryImpl<T> implements LearningFactsRepository<T
 	}
 
 	private Collection<Fact<T>> splitSet(int startIndex, int endIndex) {
-
-		var result = new ArrayList<Fact<T>>();
-
-		@SuppressWarnings("unchecked")
-		Fact<T>[] facts = factsRepository.getAll().toArray(new Fact[0]);
-
-		int index = startIndex;
-
-		while (index < endIndex) {
-			result.add(facts[index]);
-			index++;
-		}
-
-		return result;
+		throw new UnsupportedOperationException();
 	}
 
 	private int threshold(int factSetSize) {

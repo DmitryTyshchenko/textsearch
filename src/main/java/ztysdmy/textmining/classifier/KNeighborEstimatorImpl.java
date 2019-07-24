@@ -1,9 +1,9 @@
 package ztysdmy.textmining.classifier;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -12,47 +12,47 @@ import ztysdmy.textmining.model.LikelihoodResult;
 import ztysdmy.textmining.model.TermsVector;
 import ztysdmy.textmining.model.TermsVectorBuilder;
 import ztysdmy.textmining.repository.FactsRepository;
-import ztysdmy.textmining.repository.query.GetAllFactsQuery;
 
 public class KNeighborEstimatorImpl<T> implements Classifier<T> {
 
 	private final BiFunction<TermsVector, TermsVector, Double> estimationFunction;
 
 	private FactsRepository<T> factsRespository;
-	
+
 	int complexity;
 
-	public KNeighborEstimatorImpl(FactsRepository<T> factsRespository, BiFunction<TermsVector, TermsVector, Double> estimationFunction, int complexity) {
+	public KNeighborEstimatorImpl(FactsRepository<T> factsRespository,
+			BiFunction<TermsVector, TermsVector, Double> estimationFunction, int complexity) {
 		this.estimationFunction = estimationFunction;
 		this.complexity = complexity;
 		this.factsRespository = factsRespository;
 	}
 
-
 	@Override
 	public List<LikelihoodResult<T>> likelihood(Fact<T> input) {
 
 		var toEvalTermsVector = TermsVectorBuilder.build(input, this.complexity);
-		
+
 		ArrayList<LikelihoodResult<T>> result = new ArrayList<>();
 
-		for (Fact<T> fact : facts()) {
+		var iterator = iterator();
 
+		while (iterator.hasNext()) {
+			
+			var fact = iterator.next();
 			var termsVector = TermsVectorBuilder.build(fact, this.complexity);
 
 			Double weight = termsVector.eval(toEvalTermsVector, this.estimationFunction);
 			result.add(new LikelihoodResult<>(fact, weight));
 
 		}
+
 		Collections.sort(result, this.resultComparator);
 		return result;
 	}
 
-	private Collection<Fact<T>> facts() {
-
-		GetAllFactsQuery<T> qutAllQuery = new GetAllFactsQuery<>(factsRespository);
-
-		return qutAllQuery.query();
+	private Iterator<Fact<T>> iterator() {
+		return this.factsRespository.iterator();
 	}
 
 	private final Comparator<LikelihoodResult<T>> resultComparator = (a, b) -> a.probability() < b.probability() ? 1

@@ -14,21 +14,10 @@ import ztysdmy.textmining.repository.InMemoryFactsRepository;
 
 public class InMemoryFactRepositoryTest {
 
-	@Test
-	public void shouldGetAllDocuments() throws Exception {
-
-		var textRepository = new InMemoryFactsRepository<Double>();
-		textRepository.clear();
-		var facts = facts();
-		textRepository.populate(facts);
-		var result = textRepository.getAll();
-		var array = result.toArray(new Fact[0]);
-		Assert.assertEquals(2, array.length);
-	}
-
+	
 	@SuppressWarnings("static-access")
 	@Test
-	public void shouldGetAllDocmentsInDifferentThreads() throws Exception {
+/**	public void shouldGetAllDocmentsInDifferentThreads() throws Exception {
 
 		var documents = facts();
 		var textRepository = new InMemoryFactsRepository<Double>();
@@ -59,7 +48,7 @@ public class InMemoryFactRepositoryTest {
 
 		Assert.assertTrue(!futureDocuments.get().isEmpty());
 	}
-
+**/
 	private Collection<Fact<Double>> facts() {
 
 		var result = List.of(fact("test"), fact("test1"));

@@ -2,9 +2,9 @@ package ztysdmy.textmining.repository;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import ztysdmy.textmining.model.Fact;
 
@@ -13,14 +13,7 @@ public class InMemoryFactsRepository<T> implements FactsRepository<T> {
 	public InMemoryFactsRepository() {
 	};
 
-	@Override
-	public Collection<Fact<T>> getAll() {
-		var localFacts = facts;
-		return doWithOptimisticRead(() -> {
-			return localFacts.entrySet().stream().map(entry -> entry.getValue()).collect(Collectors.toList());
-		});
-	}
-
+	
 	private <R> R doWithOptimisticRead(Supplier<R> supplier) {
 
 		long stamp = readWriteLock.tryOptimisticRead();
@@ -81,5 +74,13 @@ public class InMemoryFactsRepository<T> implements FactsRepository<T> {
 	@Override
 	public int size() {
 		return doWithOptimisticRead(() -> facts.size());
+	}
+
+
+
+	@Override
+	public Iterator<Fact<T>> iterator() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
