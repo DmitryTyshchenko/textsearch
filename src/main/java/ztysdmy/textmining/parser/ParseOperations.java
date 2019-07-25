@@ -6,6 +6,11 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import ztysdmy.functional.tailcall.TailCall;
+
+import static ztysdmy.functional.tailcall.TailCallUtility.*;
+
+
 public class ParseOperations {
 
 	private ParseOperations() {
@@ -58,17 +63,20 @@ public class ParseOperations {
 		@Override
 		public Collection<String> parseSentences(String input) {
 			Collection<String> collector = new ArrayList<>();
-			parseAndCollectSentences(input, collector);
+			parseAndCollectSentences(input, collector).invoke();
 			return collector;
 		}
 
-		private void parseAndCollectSentences(String input, Collection<String> collector) {
+		private TailCall<Collection<String>> parseAndCollectSentences(String input, Collection<String> collector) {
 
 			String segmentValue = input.toString();
 
 			var matcher = SENTENCE_END.matcher(segmentValue);
 
-			if (matcher.find()) {
+			if (!matcher.find()) {
+				collector.add(input);
+				return done(collector);
+			} else {
 				var index = matcher.start() + (matcher.end() - matcher.start());
 				var sentence = segmentValue.substring(0, index);
 				// remove space symbol at the end
@@ -78,9 +86,32 @@ public class ParseOperations {
 				var remaining = segmentValue.substring(index);
 				// parseAndCollectSentences(new Segment(remaining, input.segmentType()),
 				// collector);
-				parseAndCollectSentences(remaining, collector);
-			} else {
+				return call(()->parseAndCollectSentences(remaining, collector));
+			}
+		}
+
+		
+		
+		@Deprecated
+		private void parseAndCollectSentences_old(String input, Collection<String> collector) {
+
+			String segmentValue = input.toString();
+
+			var matcher = SENTENCE_END.matcher(segmentValue);
+
+			if (!matcher.find()) {
 				collector.add(input);
+			} else {
+				var index = matcher.start() + (matcher.end() - matcher.start());
+				var sentence = segmentValue.substring(0, index);
+				// remove space symbol at the end
+				sentence = sentence.stripTrailing();
+				// collector.add(new Segment(sentence, SegmentType.SENTENCE));
+				collector.add(sentence);
+				var remaining = segmentValue.substring(index);
+				// parseAndCollectSentences(new Segment(remaining, input.segmentType()),
+				// collector);
+				parseAndCollectSentences_old(remaining, collector);
 			}
 		}
 	}
