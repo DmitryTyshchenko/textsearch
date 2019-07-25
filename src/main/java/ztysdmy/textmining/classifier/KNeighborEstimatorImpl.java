@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiFunction;
 
 import ztysdmy.textmining.model.Fact;
@@ -12,7 +11,6 @@ import ztysdmy.textmining.model.LikelihoodResult;
 import ztysdmy.textmining.model.TermsVector;
 import ztysdmy.textmining.model.TermsVectorBuilder;
 import ztysdmy.textmining.repository.FactsRepository;
-import ztysdmy.textmining.repository.RepositoryIterator;
 
 public class KNeighborEstimatorImpl<T> implements Classifier<T> {
 
@@ -36,20 +34,18 @@ public class KNeighborEstimatorImpl<T> implements Classifier<T> {
 
 		ArrayList<LikelihoodResult<T>> result = new ArrayList<>();
 
-		RepositoryIterator<T> iterator = this.factsRespository.iterator();
+		var iterator = this.factsRespository.iterator();
 		
-		Optional<Fact<T>> optFact = iterator.next();
 		
-		while (optFact.isPresent()) {
+		while (iterator.hasNext()) {
 			
-			Fact<T> fact = optFact.get();
+			var fact = iterator.next();
 			
 			var termsVector = TermsVectorBuilder.build(fact, this.complexity);
 
 			Double weight = termsVector.eval(toEvalTermsVector, this.estimationFunction);
 			result.add(new LikelihoodResult<>(fact, weight));
 
-			optFact = iterator.next();
 		}
 
 		Collections.sort(result, this.resultComparator);

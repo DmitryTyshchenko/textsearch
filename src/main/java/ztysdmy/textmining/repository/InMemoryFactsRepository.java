@@ -3,6 +3,7 @@ package ztysdmy.textmining.repository;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.Supplier;
 
@@ -78,10 +79,10 @@ public class InMemoryFactsRepository<T> implements FactsRepository<T> {
 
 
 	@Override
-	public RepositoryIterator<T> iterator() {
+	public Iterator<Fact<T>> iterator() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	
 }

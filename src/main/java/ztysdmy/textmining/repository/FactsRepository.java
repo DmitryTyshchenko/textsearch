@@ -1,12 +1,13 @@
 package ztysdmy.textmining.repository;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import ztysdmy.textmining.model.Fact;
 
 public interface FactsRepository<T> {
 
-	RepositoryIterator<T> iterator();
+	Iterator<Fact<T>> iterator();
 
 	void populate(Collection<Fact<T>> facts);
 
