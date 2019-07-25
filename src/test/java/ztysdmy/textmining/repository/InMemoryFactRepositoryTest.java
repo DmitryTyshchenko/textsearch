@@ -1,7 +1,7 @@
 package ztysdmy.textmining.repository;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -14,10 +14,9 @@ import ztysdmy.textmining.repository.InMemoryFactsRepository;
 
 public class InMemoryFactRepositoryTest {
 
-	
 	@SuppressWarnings("static-access")
 	@Test
-/**	public void shouldGetAllDocmentsInDifferentThreads() throws Exception {
+	public void shouldPopulateAndGetFactsInDifferentThreads() throws Exception {
 
 		var documents = facts();
 		var textRepository = new InMemoryFactsRepository<Double>();
@@ -25,11 +24,14 @@ public class InMemoryFactRepositoryTest {
 		var futureDocuments = CompletableFuture.supplyAsync(() -> {
 
 			@SuppressWarnings("unchecked")
-			Collection<Fact<Double>> documentSet = Collections.EMPTY_LIST;
+			Collection<Fact<Double>> documentSet = new ArrayList<>();
 
 			while (documentSet.isEmpty()) {
 
-				documentSet = textRepository.getAll();
+				var iterator = textRepository.iterator();
+				while (iterator.hasNext()) {
+					documentSet.add(iterator.next());
+				}
 			}
 
 			return documentSet;
@@ -48,7 +50,7 @@ public class InMemoryFactRepositoryTest {
 
 		Assert.assertTrue(!futureDocuments.get().isEmpty());
 	}
-**/
+
 	private Collection<Fact<Double>> facts() {
 
 		var result = List.of(fact("test"), fact("test1"));

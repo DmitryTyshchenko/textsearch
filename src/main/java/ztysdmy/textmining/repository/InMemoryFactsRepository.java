@@ -3,7 +3,7 @@ package ztysdmy.textmining.repository;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Optional;
+import java.util.Map.Entry;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.Supplier;
 
@@ -14,7 +14,6 @@ public class InMemoryFactsRepository<T> implements FactsRepository<T> {
 	public InMemoryFactsRepository() {
 	};
 
-	
 	private <R> R doWithOptimisticRead(Supplier<R> supplier) {
 
 		long stamp = readWriteLock.tryOptimisticRead();
@@ -37,7 +36,7 @@ public class InMemoryFactsRepository<T> implements FactsRepository<T> {
 	@Override
 	public void populate(Collection<Fact<T>> facts) {
 
-		HashMap<Long, Fact<T>> localFacts = facts(facts);
+		var localFacts = facts(facts);
 
 		long stamp = readWriteLock.writeLock();
 		try {
@@ -64,9 +63,10 @@ public class InMemoryFactsRepository<T> implements FactsRepository<T> {
 
 	@Override
 	public void clear() {
+		HashMap<Long, Fact<T>> newHashMap = new HashMap<>();
 		long stamp = readWriteLock.writeLock();
 		try {
-			this.facts = new HashMap<>();
+			this.facts = newHashMap;
 		} finally {
 			readWriteLock.unlockWrite(stamp);
 		}
@@ -77,12 +77,31 @@ public class InMemoryFactsRepository<T> implements FactsRepository<T> {
 		return doWithOptimisticRead(() -> facts.size());
 	}
 
-
 	@Override
 	public Iterator<Fact<T>> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		var localFacts = facts;
+		return new FactsRepositroyIterator<T>(localFacts.entrySet().iterator());
 	}
 
-	
+	private static class FactsRepositroyIterator<T> implements Iterator<Fact<T>> {
+
+		private final Iterator<Entry<Long, Fact<T>>> iterator;
+
+		FactsRepositroyIterator(Iterator<Entry<Long, Fact<T>>> iterator) {
+
+			this.iterator = iterator;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return iterator.hasNext();
+		}
+
+		@Override
+		public Fact<T> next() {
+
+			return iterator.next().getValue();
+		}
+
+	}
 }
