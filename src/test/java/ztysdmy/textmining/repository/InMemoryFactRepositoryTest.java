@@ -45,7 +45,7 @@ public class InMemoryFactRepositoryTest {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			textRepository.populate(documents);
+			textRepository.add(documents);
 		});
 
 		Assert.assertTrue(!futureDocuments.get().isEmpty());
@@ -67,7 +67,7 @@ public class InMemoryFactRepositoryTest {
 	public void shouldGetSize() throws Exception {
 		var textRepository = new InMemoryFactsRepository<Double>();
 		textRepository.clear();
-		textRepository.populate(facts());
+		textRepository.add(facts());
 		var size = textRepository.size();
 		Assert.assertEquals(2, size);
 	}

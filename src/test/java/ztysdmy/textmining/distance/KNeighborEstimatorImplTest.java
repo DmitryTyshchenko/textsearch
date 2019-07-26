@@ -27,7 +27,7 @@ public class KNeighborEstimatorImplTest {
 
 		List<Fact<String>> facts = List.of(fact("some test text", "classA"),
 				fact("should be correct text for classification", "classB"));
-		factRepository.populate(facts);
+		factRepository.add(facts);
 
 		Classifier<String> estimator = new KNeighborEstimatorImpl<>(factRepository, new TanimotoDistance(), 1);
 

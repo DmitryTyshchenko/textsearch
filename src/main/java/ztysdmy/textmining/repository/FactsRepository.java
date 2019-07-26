@@ -9,7 +9,7 @@ public interface FactsRepository<T> {
 
 	Iterator<Fact<T>> iterator();
 
-	void populate(Collection<Fact<T>> facts);
+	void add(Collection<Fact<T>> facts);
 
 	void clear();
 	

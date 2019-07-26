@@ -34,24 +34,21 @@ public class InMemoryFactsRepository<T> implements FactsRepository<T> {
 	private volatile HashMap<Long, Fact<T>> facts = new HashMap<>();
 
 	@Override
-	public void populate(Collection<Fact<T>> facts) {
-
-		var localFacts = facts(facts);
+	public void add(Collection<Fact<T>> facts) {
 
 		long stamp = readWriteLock.writeLock();
 		try {
-
-			this.facts = localFacts;
-
+			
+			addFacts(facts, this.facts);
+			
 		} finally {
 			readWriteLock.unlockWrite(stamp);
 		}
 
 	}
 
-	private HashMap<Long, Fact<T>> facts(Collection<Fact<T>> facts) {
+	private HashMap<Long, Fact<T>> addFacts(Collection<Fact<T>> facts, HashMap<Long, Fact<T>> localFacts) {
 
-		HashMap<Long, Fact<T>> localFacts = new HashMap<>();
 		for (Fact<T> fact : facts) {
 			localFacts.put(fact.identifier(), fact);
 		}
@@ -79,7 +76,7 @@ public class InMemoryFactsRepository<T> implements FactsRepository<T> {
 
 	@Override
 	public Iterator<Fact<T>> iterator() {
-		var localFacts = facts;
+		var localFacts = doWithOptimisticRead(() -> facts);
 		return new FactsRepositroyIterator<T>(localFacts.entrySet().iterator());
 	}
 
