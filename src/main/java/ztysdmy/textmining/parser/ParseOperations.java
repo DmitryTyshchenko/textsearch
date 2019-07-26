@@ -89,30 +89,6 @@ public class ParseOperations {
 				return call(()->parseAndCollectSentences(remaining, collector));
 			}
 		}
-
 		
-		
-		@Deprecated
-		private void parseAndCollectSentences_old(String input, Collection<String> collector) {
-
-			String segmentValue = input.toString();
-
-			var matcher = SENTENCE_END.matcher(segmentValue);
-
-			if (!matcher.find()) {
-				collector.add(input);
-			} else {
-				var index = matcher.start() + (matcher.end() - matcher.start());
-				var sentence = segmentValue.substring(0, index);
-				// remove space symbol at the end
-				sentence = sentence.stripTrailing();
-				// collector.add(new Segment(sentence, SegmentType.SENTENCE));
-				collector.add(sentence);
-				var remaining = segmentValue.substring(index);
-				// parseAndCollectSentences(new Segment(remaining, input.segmentType()),
-				// collector);
-				parseAndCollectSentences_old(remaining, collector);
-			}
-		}
 	}
 }
