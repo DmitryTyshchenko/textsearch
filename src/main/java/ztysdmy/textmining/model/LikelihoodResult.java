@@ -2,16 +2,16 @@ package ztysdmy.textmining.model;
 
 public class LikelihoodResult<T> {
 	
-	private final Fact<T> fact;
+	private final Target<T> target;
 	private final Double probability;
 	
-	public LikelihoodResult(Fact<T> fact, Double probability) {
-		this.fact = fact;
+	public LikelihoodResult(Target<T> target, Double probability) {
+		this.target = target;
 		this.probability = probability;
 	}
 
-	public Fact<T> fact() {
-		return this.fact;
+	public Target<T> target() {
+		return this.target;
 	}
 	
 	public Double probability() {

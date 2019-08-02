@@ -35,7 +35,7 @@ public class KNeighborEstimatorImplTest {
 
 		var estimated = estimator.likelihood(toEval);
 
-		String estimatedClass = estimated.get(0).fact().target().get().value();
+		String estimatedClass = estimated.target().value();
 
 		Assert.assertEquals("classB", estimatedClass);
 

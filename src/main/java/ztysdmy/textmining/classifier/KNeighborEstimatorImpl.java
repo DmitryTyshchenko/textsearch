@@ -3,11 +3,11 @@ package ztysdmy.textmining.classifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.function.BiFunction;
 
 import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.LikelihoodResult;
+import ztysdmy.textmining.model.Target;
 import ztysdmy.textmining.model.TermsVector;
 import ztysdmy.textmining.model.TermsVectorBuilder;
 import ztysdmy.textmining.repository.FactsRepository;
@@ -15,7 +15,6 @@ import ztysdmy.textmining.repository.FactsRepository;
 public class KNeighborEstimatorImpl<T> implements Classifier<T> {
 
 	private final BiFunction<TermsVector, TermsVector, Double> estimationFunction;
-
 	private FactsRepository<T> factsRespository;
 
 	int complexity;
@@ -28,32 +27,47 @@ public class KNeighborEstimatorImpl<T> implements Classifier<T> {
 	}
 
 	@Override
-	public List<LikelihoodResult<T>> likelihood(Fact<T> input) {
+	public LikelihoodResult<T> likelihood(Fact<T> input) {
 
-		var toEvalTermsVector = TermsVectorBuilder.build(input, this.complexity);
+		var tempResults = collectDistances(TermsVectorBuilder.build(input, this.complexity));
+		Collections.sort(tempResults, this.resultComparator);
 
-		ArrayList<LikelihoodResult<T>> result = new ArrayList<>();
+		Target<T> target = tempResults.get(0).fact.target()
+				.orElseThrow(() -> new RuntimeException("Fact in Storage can't be without Target"));
 
-		var iterator = this.factsRespository.iterator();
-		
-		
-		while (iterator.hasNext()) {
-			
-			var fact = iterator.next();
-			
-			var termsVector = TermsVectorBuilder.build(fact, this.complexity);
-
-			Double weight = termsVector.eval(toEvalTermsVector, this.estimationFunction);
-			result.add(new LikelihoodResult<>(fact, weight));
-
-		}
-
-		Collections.sort(result, this.resultComparator);
+		LikelihoodResult<T> result = new LikelihoodResult<T>(target, 1.d);
 		return result;
 	}
 
-	
-	private final Comparator<LikelihoodResult<T>> resultComparator = (a, b) -> a.probability() < b.probability() ? 1
-			: a.probability() == b.probability() ? 0 : -1;
+	private ArrayList<FactPlusWeight<T>> collectDistances(TermsVector toEvalTermsVector) {
+
+		ArrayList<FactPlusWeight<T>> tempResults = new ArrayList<>();
+		var iterator = this.factsRespository.iterator();
+		while (iterator.hasNext()) {
+
+			var fact = iterator.next();
+			var termsVector = TermsVectorBuilder.build(fact, this.complexity);
+
+			Double weight = termsVector.eval(toEvalTermsVector, this.estimationFunction);
+			tempResults.add(new FactPlusWeight<>(fact, weight));
+
+		}
+		return tempResults;
+	}
+
+	static class FactPlusWeight<T> {
+
+		public final Fact<T> fact;
+		public final Double weight;
+
+		public FactPlusWeight(Fact<T> fact, Double weight) {
+
+			this.fact = fact;
+			this.weight = weight;
+		}
+	}
+
+	private final Comparator<FactPlusWeight<T>> resultComparator = (a, b) -> a.weight < b.weight ? 1
+			: a.weight == b.weight ? 0 : -1;
 
 }
