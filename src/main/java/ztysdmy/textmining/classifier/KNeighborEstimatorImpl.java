@@ -3,7 +3,9 @@ package ztysdmy.textmining.classifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.LikelihoodResult;
@@ -17,12 +19,13 @@ public class KNeighborEstimatorImpl<T> implements Classifier<T> {
 	private final BiFunction<TermsVector, TermsVector, Double> estimationFunction;
 	private FactsRepository<T> factsRespository;
 
-	int complexity;
+	int complexity = 1;
+
+	int neighborns = 1;
 
 	public KNeighborEstimatorImpl(FactsRepository<T> factsRespository,
-			BiFunction<TermsVector, TermsVector, Double> estimationFunction, int complexity) {
+			BiFunction<TermsVector, TermsVector, Double> estimationFunction) {
 		this.estimationFunction = estimationFunction;
-		this.complexity = complexity;
 		this.factsRespository = factsRespository;
 	}
 
@@ -32,10 +35,35 @@ public class KNeighborEstimatorImpl<T> implements Classifier<T> {
 		var tempResults = collectDistances(TermsVectorBuilder.build(input, this.complexity));
 		Collections.sort(tempResults, this.resultComparator);
 
-		Target<T> target = tempResults.get(0).fact.target()
-				.orElseThrow(() -> new RuntimeException("Fact in Storage can't be without Target"));
+		return likelihood(tempResults);
+	}
 
-		LikelihoodResult<T> result = new LikelihoodResult<T>(target, 1.d);
+	private LikelihoodResult<T> likelihood(ArrayList<FactPlusWeight<T>> estimationsResult) {
+
+		var innerMap = new HashMap<Target<T>, Integer>();
+		Target<T> clazz = null;
+		var occurrences = 0;
+
+		var counter = 0;
+
+		while (counter < neighborns && counter < estimationsResult.size()) {
+			
+			var target = estimationsResult.get(counter).fact.target()
+					.orElseThrow(() -> new RuntimeException("Fact int storage can't be without Target"));
+			var targetOccurence = innerMap.compute(target, (k, v) -> (v == null) ? 1 : v++);
+
+			if (targetOccurence > occurrences) {
+
+				clazz = target;
+				occurrences = targetOccurence;
+			}
+
+			counter++;
+		}
+		
+		var probability = occurrences*1.d/counter;
+
+		LikelihoodResult<T> result = new LikelihoodResult<T>(clazz, probability);
 		return result;
 	}
 
@@ -70,4 +98,32 @@ public class KNeighborEstimatorImpl<T> implements Classifier<T> {
 	private final Comparator<FactPlusWeight<T>> resultComparator = (a, b) -> a.weight < b.weight ? 1
 			: a.weight == b.weight ? 0 : -1;
 
+	
+	public static class KNeighborEstimatorImplBuilder<T> {
+		
+		FactsRepository<T> factsRespository;
+		BiFunction<TermsVector, TermsVector, Double> estimationFunction;
+		public int complexity = 1;
+		public int neighborns = 1;
+
+		
+		public KNeighborEstimatorImplBuilder (FactsRepository<T> factsRespository,
+			BiFunction<TermsVector, TermsVector, Double> estimationFunction) {
+			
+			this.factsRespository = factsRespository;
+			this.estimationFunction = estimationFunction;
+		}
+		
+		public KNeighborEstimatorImplBuilder<T> with(Consumer<KNeighborEstimatorImplBuilder<T>> consumer) {
+			consumer.accept(this);
+			return this;
+		}
+		
+		public KNeighborEstimatorImpl<T> build() {
+			var result = new KNeighborEstimatorImpl<>(factsRespository, estimationFunction);
+			result.complexity = complexity;
+			result.neighborns = neighborns;
+			return result;
+		}
+	}
 }
