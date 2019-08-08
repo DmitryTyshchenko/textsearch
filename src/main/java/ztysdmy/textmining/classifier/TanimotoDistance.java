@@ -8,7 +8,7 @@ import ztysdmy.textmining.model.TermsVector;
 
 public class TanimotoDistance implements BiFunction<TermsVector, TermsVector, Double> {
 
-	@Override
+	//@Override
 	public Double apply(TermsVector termsVector1, TermsVector termsVector2) {
 		var x = termsVector1.terms().keySet().size();
 		var y = termsVector2.terms().keySet().size();

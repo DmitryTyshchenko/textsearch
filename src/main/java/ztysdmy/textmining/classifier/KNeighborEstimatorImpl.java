@@ -31,41 +31,46 @@ public class KNeighborEstimatorImpl<T> implements Classifier<T> {
 
 	@Override
 	public LikelihoodResult<T> likelihood(Fact<T> input) {
-
 		var tempResults = collectDistances(TermsVectorBuilder.build(input, this.complexity));
 		Collections.sort(tempResults, this.resultComparator);
-
-		return likelihood(tempResults);
+		return likelihood2(tempResults);
 	}
 
-	private LikelihoodResult<T> likelihood(ArrayList<FactPlusWeight<T>> estimationsResult) {
+	private LikelihoodResult<T> likelihood2(ArrayList<FactPlusWeight<T>> estimationsResult) {
 
-		var innerMap = new HashMap<Target<T>, Integer>();
+		HashMap<Target<T>, Integer> innerMap = new HashMap<Target<T>, Integer>();
 		Target<T> clazz = null;
 		var occurrences = 0;
 
 		var counter = 0;
 
 		while (counter < neighborns && counter < estimationsResult.size()) {
-			
+
 			var target = estimationsResult.get(counter).fact.target()
 					.orElseThrow(() -> new RuntimeException("Fact int storage can't be without Target"));
-			var targetOccurence = innerMap.compute(target, (k, v) -> (v == null) ? 1 : v++);
+
+			var targetOccurence = innerMap.compute(target, mergeFunc);
 
 			if (targetOccurence > occurrences) {
 
 				clazz = target;
 				occurrences = targetOccurence;
 			}
-
 			counter++;
 		}
-		
-		var probability = occurrences*1.d/counter;
+
+		var probability = occurrences * 1.d / counter;
 
 		LikelihoodResult<T> result = new LikelihoodResult<T>(clazz, probability);
 		return result;
+
 	}
+
+	private BiFunction<Target<T>, Integer, Integer> mergeFunc = (k, v) -> {
+		if (v == null)
+			return 1;
+		return v++;
+	};
 
 	private ArrayList<FactPlusWeight<T>> collectDistances(TermsVector toEvalTermsVector) {
 
@@ -98,27 +103,25 @@ public class KNeighborEstimatorImpl<T> implements Classifier<T> {
 	private final Comparator<FactPlusWeight<T>> resultComparator = (a, b) -> a.weight < b.weight ? 1
 			: a.weight == b.weight ? 0 : -1;
 
-	
 	public static class KNeighborEstimatorImplBuilder<T> {
-		
+
 		FactsRepository<T> factsRespository;
 		BiFunction<TermsVector, TermsVector, Double> estimationFunction;
 		public int complexity = 1;
 		public int neighborns = 1;
 
-		
-		public KNeighborEstimatorImplBuilder (FactsRepository<T> factsRespository,
-			BiFunction<TermsVector, TermsVector, Double> estimationFunction) {
-			
+		public KNeighborEstimatorImplBuilder(FactsRepository<T> factsRespository,
+				BiFunction<TermsVector, TermsVector, Double> estimationFunction) {
+
 			this.factsRespository = factsRespository;
 			this.estimationFunction = estimationFunction;
 		}
-		
+
 		public KNeighborEstimatorImplBuilder<T> with(Consumer<KNeighborEstimatorImplBuilder<T>> consumer) {
 			consumer.accept(this);
 			return this;
 		}
-		
+
 		public KNeighborEstimatorImpl<T> build() {
 			var result = new KNeighborEstimatorImpl<>(factsRespository, estimationFunction);
 			result.complexity = complexity;

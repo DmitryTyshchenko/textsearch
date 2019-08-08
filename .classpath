@@ -7,7 +7,7 @@
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-12">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
@@ -22,6 +22,6 @@
 			<attribute name="gradle_used_by_scope" value="test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/Projects/work11/textsearch/libs/java-functional-1.0.0.jar"/>
+	<classpathentry kind="lib" path="D:/Projects/textsearch/libs/java-functional-1.0.0.jar"/>
 	<classpathentry kind="output" path="bin/default"/>
 </classpath>
