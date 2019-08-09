@@ -33,15 +33,20 @@ public class NaiveBaeys<T> implements Classifier<T> {
 		TermsVector factTerms = TermsVectorBuilder.build(input, this.complexity);
 
 		LikelihoodResult<T> IDENTITY = new LikelihoodResult<>(null, 0.d);
-		
-		LikelihoodResult<T> result =  classes.keySet().stream().map(target->pcx.apply(target).apply(factTerms)).reduce(IDENTITY,(a,b)->{
-	      if (b.probability()>=a.probability()) {
-	    	  return b;
-	      }
-	      return a;
-		});
-	
+
+		LikelihoodResult<T> result = classes.keySet().stream().map(target -> pcx.apply(target).apply(factTerms))
+				.reduce(IDENTITY, (a, b) -> chooseMax(a, b));
+
 		return result;
+	}
+
+	LikelihoodResult<T> chooseMax(LikelihoodResult<T> a, LikelihoodResult<T> b) {
+
+		if (b.probability() >= a.probability()) {
+			return b;
+		}
+		return a;
+
 	}
 
 	static class TermStatistics {
@@ -78,10 +83,10 @@ public class NaiveBaeys<T> implements Classifier<T> {
 		return z * py.apply(target);
 
 	};
-	
-	Function<Target<T>,Function<TermsVector, LikelihoodResult<T>>> pcx = target->termsVector-> {
-		var probability = (numenator.apply(target).apply(termsVector)*1.d)/denominator.apply(termsVector);
-		
+
+	Function<Target<T>, Function<TermsVector, LikelihoodResult<T>>> pcx = target -> termsVector -> {
+		var probability = (numenator.apply(target).apply(termsVector) * 1.d) / denominator.apply(termsVector);
+
 		return new LikelihoodResult<T>(target, probability);
 	};
 }
