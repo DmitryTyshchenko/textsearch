@@ -1,4 +1,4 @@
-package ztysdmy.textmining.distance;
+package ztysdmy.textmining.classifier;
 
 import java.util.List;
 

@@ -15,7 +15,7 @@ import ztysdmy.textmining.model.TermsVectorBuilder;
 
 public class NaiveBaeys<T> implements Classifier<T> {
 
-	HashMap<Term, TermStatistics<T>> termsStatistics = new HashMap<>();
+	HashMap<Term, TermStatistics> termsStatistics = new HashMap<>();
 
 	// keeps Target classes and their probabilities
 	HashMap<Target<T>, Double> classes = new HashMap<>();
@@ -25,6 +25,10 @@ public class NaiveBaeys<T> implements Classifier<T> {
 	
 	public void setTotalFacts(int totalFacts) {
 		this.totalFacts = totalFacts;
+	}
+	
+	public int totalFacts() {
+		return totalFacts;
 	}
 
 	@Override
@@ -71,15 +75,22 @@ public class NaiveBaeys<T> implements Classifier<T> {
 
 	}
 
-	static class TermStatistics<T> {
+	static class TermStatistics {
 
-		HashMap<Target<T>, Integer> inTheClass = new HashMap<>();
+		HashMap<Target<?>, Integer> inTheClass = new HashMap<>();
 
 		int totalOccuriences;
 
 	}
+	
+	private TermStatistics termStatitics(Term term) {
+		
+		return this.termsStatistics.get(term);
+	}
 
-	Supplier<Double> denominator = ()-> 1.d;
+	Function<TermsVector, Double> denominator = tv-> {
+		return tv.terms().stream().map(x->termStatitics(x)).map(x->(x.totalOccuriences*1.d)/totalFacts()).reduce(1.d, (x,y)->x*y);
+	};
 	
 	
 }
