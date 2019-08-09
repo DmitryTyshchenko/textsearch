@@ -1,10 +1,7 @@
 package ztysdmy.textmining.classifier;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.LikelihoodResult;
@@ -17,80 +14,74 @@ public class NaiveBaeys<T> implements Classifier<T> {
 
 	HashMap<Term, TermStatistics> termsStatistics = new HashMap<>();
 
-	// keeps Target classes and their probabilities
-	HashMap<Target<T>, Double> classes = new HashMap<>();
+	// keeps Target classes and their occurrences
+	HashMap<Target<T>, Integer> classes = new HashMap<>();
 
 	int complexity = 1;
 	int totalFacts;
-	
+
 	public void setTotalFacts(int totalFacts) {
 		this.totalFacts = totalFacts;
 	}
-	
+
 	public int totalFacts() {
 		return totalFacts;
 	}
 
 	@Override
 	public LikelihoodResult<T> likelihood(Fact<T> input) {
-		// TODO Auto-generated method stub
 		TermsVector factTerms = TermsVectorBuilder.build(input, this.complexity);
 
-		// classes.keySet().
-
-		return null;
-	}
-
-	/**
-	 * Implements p(c|x)=p(x|c)p(c)/p(x)
-	 */
-	private LikelihoodResult<T> likelihood(TermsVector factTerms, Target<T> target) {
-		var classProbability = classes.get(target);
-
-		factTerms.eval(tv -> 1.d);
-
-		return null;
-	}
-
-	private Function<Target<T>, Function<TermsVector, Double>> func1 = target -> termsVector -> {
-
-		BiFunction<Double, Double, Double> multiplication = (d1, d2) -> d1 * d2;
-
-		Iterator<Term> terms = termsVector.terms().iterator();
-		while (terms.hasNext()) {
-			multiplication = createMultiplicationChain(multiplication, target, terms.next());
-		}
-		return multiplication.apply(1.d, 1.d);
-	};
-
-	private BiFunction<Double, Double, Double> createMultiplicationChain(BiFunction<Double, Double, Double> multiplication,
-			Target<T> target, Term term) {
-
-		var termStatistic = termsStatistics.get(term);
-		// calculate p(x|c)
-		var termInClassOccurencies = termStatistic.inTheClass.get(target);
-		var termByClassProbability = (termInClassOccurencies * 1.d) / termStatistic.totalOccuriences;
-
-		return multiplication.andThen(prev -> prev * termByClassProbability);
-
+		LikelihoodResult<T> IDENTITY = new LikelihoodResult<>(null, 0.d);
+		
+		LikelihoodResult<T> result =  classes.keySet().stream().map(target->pcx.apply(target).apply(factTerms)).reduce(IDENTITY,(a,b)->{
+	      if (b.probability()>=a.probability()) {
+	    	  return b;
+	      }
+	      return a;
+		});
+	
+		return result;
 	}
 
 	static class TermStatistics {
-
 		HashMap<Target<?>, Integer> inTheClass = new HashMap<>();
-
 		int totalOccuriences;
-
 	}
-	
+
 	private TermStatistics termStatitics(Term term) {
-		
+
 		return this.termsStatistics.get(term);
 	}
 
-	Function<TermsVector, Double> denominator = tv-> {
-		return tv.terms().stream().map(x->termStatitics(x)).map(x->(x.totalOccuriences*1.d)/totalFacts()).reduce(1.d, (x,y)->x*y);
+	Function<TermsVector, Double> denominator = tv -> {
+		return tv.terms().stream().map(x -> termStatitics(x)).map(x -> (x.totalOccuriences * 1.d) / totalFacts())
+				.reduce(1.d, (x, y) -> x * y);
+	};
+
+	Function<Target<?>, Double> py = target -> classes.get(target) * 1.d / totalFacts();
+
+	Function<Target<?>, Function<Term, Double>> pxc = target -> term -> pxc(target, term);
+
+	private double pxc(Target<?> target, Term term) {
+		var termStatistic = termsStatistics.get(term);
+		// calculate p(x|c)
+		var termInClassOccurencies = termStatistic.inTheClass.get(target);
+		var pxc = (termInClassOccurencies * 1.d) / termStatistic.totalOccuriences;
+		return pxc;
+	}
+
+	Function<Target<?>, Function<TermsVector, Double>> numenator = target -> tv -> {
+
+		var z = tv.terms().stream().map(pxc.apply(target)).reduce(1.d, (x, y) -> x * y);
+
+		return z * py.apply(target);
+
 	};
 	
-	
+	Function<Target<T>,Function<TermsVector, LikelihoodResult<T>>> pcx = target->termsVector-> {
+		var probability = (numenator.apply(target).apply(termsVector)*1.d)/denominator.apply(termsVector);
+		
+		return new LikelihoodResult<T>(target, probability);
+	};
 }
