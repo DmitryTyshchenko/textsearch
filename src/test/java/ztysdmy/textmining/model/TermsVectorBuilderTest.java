@@ -11,10 +11,10 @@ public class TermsVectorBuilderTest {
 	public void shouldCreateTermsVector1() throws Exception {
 		var segment = "This is a some test sentence!";
 		var termsVector = TermsVectorBuilder.build(segment, 3);
-		termsVector.getTerm("is a").orElseThrow(() -> new RuntimeException("is a Not found"));
-		termsVector.getTerm("a some test").orElseThrow(() -> new RuntimeException("a some Test Not found"));
-		termsVector.getTerm("test").orElseThrow(() -> new RuntimeException("test Not found"));
-		termsVector.getTerm("this is a").orElseThrow(() -> new RuntimeException("this is a Not found"));
+		termsVector.getTerm(new Term("is a")).orElseThrow(() -> new RuntimeException("is a Not found"));
+		termsVector.getTerm(new Term("a some test")).orElseThrow(() -> new RuntimeException("a some Test Not found"));
+		termsVector.getTerm(new Term("test")).orElseThrow(() -> new RuntimeException("test Not found"));
+		termsVector.getTerm(new Term("this is a")).orElseThrow(() -> new RuntimeException("this is a Not found"));
 	}
 
 	@Test

@@ -4,19 +4,20 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiFunction;
 
+import ztysdmy.textmining.model.Term;
 import ztysdmy.textmining.model.TermsVector;
 
 public class TanimotoDistance implements BiFunction<TermsVector, TermsVector, Double> {
 
-	//@Override
+	@Override
 	public Double apply(TermsVector termsVector1, TermsVector termsVector2) {
-		var x = termsVector1.terms().keySet().size();
-		var y = termsVector2.terms().keySet().size();
+		var x = termsVector1.terms().size();
+		var y = termsVector2.terms().size();
 
-		Set<String> localTermsVector1 = new HashSet<>();
-		localTermsVector1.addAll(termsVector1.terms().keySet());
-		Set<String> localTermsVector2 = new HashSet<>();
-		localTermsVector2.addAll(termsVector2.terms().keySet());
+		Set<Term> localTermsVector1 = new HashSet<>();
+		localTermsVector1.addAll(termsVector1.terms());
+		Set<Term> localTermsVector2 = new HashSet<>();
+		localTermsVector2.addAll(termsVector2.terms());
 
 		localTermsVector1.retainAll(localTermsVector2);
 

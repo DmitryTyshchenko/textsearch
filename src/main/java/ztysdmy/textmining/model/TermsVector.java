@@ -1,39 +1,30 @@
 package ztysdmy.textmining.model;
 
-import java.util.HashMap;
-import java.util.Optional;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.Optional;
 
 public class TermsVector {
 
-	final HashMap<String, Term> terms = new HashMap<>();
-	
+	final HashSet<Term> terms = new HashSet<>();
 
 	TermsVector() {
 	}
 
-	public HashMap<String, Term> terms() {
+	public Set<Term> terms() {
 		return this.terms;
 	}
 
-	public void createOrUpdateTerm(String termValue) {
-
-		var term = new Term(termValue);
-
-		BiFunction<String, Term, Term> mappingFunction = (k, v) -> {
-			if (v == null) {
-				return term;
-			}
-			v.increment();
-			return v;
-		};
-
-		this.terms.compute(termValue, mappingFunction);
+	public Optional<Term> getTerm(Term term) {
+		return this.terms.stream().filter(t -> t.equals(term)).findFirst();
 	}
 
-	public Optional<Term> getTerm(String value) {
-		return Optional.ofNullable(terms.get(value));
+	public void addTerm(String termValue) {
+
+		var term = new Term(termValue);
+		this.terms.add(term);
 	}
 
 	/**
@@ -43,9 +34,9 @@ public class TermsVector {
 	public double eval(TermsVector input, BiFunction<TermsVector, TermsVector, Double> evalFunction) {
 		return evalFunction.apply(this, input);
 	}
-	
+
 	public double eval(Function<TermsVector, Double> evalFunction) {
-		return  evalFunction.apply(this);
+		return evalFunction.apply(this);
 	}
-	
+
 }

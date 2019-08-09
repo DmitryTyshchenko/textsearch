@@ -28,7 +28,7 @@ public class TermsVectorBuilder {
 
 		for (int i = 0; i < candidates.length; i++) {
 			var value = candidates[i];
-			result.createOrUpdateTerm(value);
+			result.addTerm(value);
 			createComplexTerms(result, candidates, complexity, i);
 		}
 
@@ -58,7 +58,7 @@ public class TermsVectorBuilder {
 		var stringBuilder = new StringBuilder();
 		stringBuilder.append(candidates[currentIndex]);
 		while ((complexityOffset != complexity) && (offset < candidates.length)) {
-			result.createOrUpdateTerm(createComplexTerm(stringBuilder, candidates, offset));
+			result.addTerm(createComplexTerm(stringBuilder, candidates, offset));
 			offset++;
 			complexityOffset++;
 		}
