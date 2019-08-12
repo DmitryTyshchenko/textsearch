@@ -17,8 +17,16 @@ public class NaiveBaeys<T> implements Classifier<T> {
 	// keeps Target classes and their occurrences
 	HashMap<Target<T>, Integer> classes = new HashMap<>();
 
-	int complexity = 1;
+	int complexity;
 	int totalFacts;
+
+	public NaiveBaeys() {
+		this(1);
+	}
+
+	public NaiveBaeys(int complexity) {
+		this.complexity = complexity;
+	}
 
 	public void setTotalFacts(int totalFacts) {
 		this.totalFacts = totalFacts;
@@ -62,7 +70,24 @@ public class NaiveBaeys<T> implements Classifier<T> {
 
 	static class TermStatistics {
 		HashMap<Target<?>, Integer> inTheClass = new HashMap<>();
-		int totalOccuriences;
+
+		void incrementOccuriens(Target<?> target) {
+
+			inTheClass.compute(target, (k, v) -> {
+				if (v == null) {
+					return 1;
+				}
+				return v++;
+			});
+
+			totalOccuriences++;
+		}
+
+		int totalOccuriences() {
+			return this.totalOccuriences;
+		}
+
+		private int totalOccuriences;
 	}
 
 	private TermStatistics termStatitics(Term term) {
@@ -71,7 +96,7 @@ public class NaiveBaeys<T> implements Classifier<T> {
 	}
 
 	Function<TermsVector, Double> denominator = tv -> {
-		return tv.terms().stream().map(x -> termStatitics(x)).map(x -> (x.totalOccuriences * 1.d) / totalFacts())
+		return tv.terms().stream().map(x -> termStatitics(x)).map(x -> (x.totalOccuriences() * 1.d) / totalFacts())
 				.reduce(1.d, (x, y) -> x * y);
 	};
 
@@ -83,7 +108,7 @@ public class NaiveBaeys<T> implements Classifier<T> {
 		var termStatistic = termsStatistics.get(term);
 		// calculate p(x|c)
 		var termInClassOccurencies = termStatistic.inTheClass.get(target);
-		var pxc = (termInClassOccurencies * 1.d) / termStatistic.totalOccuriences;
+		var pxc = (termInClassOccurencies * 1.d) / termStatistic.totalOccuriences();
 		return pxc;
 	}
 
