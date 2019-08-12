@@ -28,6 +28,17 @@ public class NaiveBaeys<T> implements Classifier<T> {
 		return totalFacts;
 	}
 
+	public void addTarget(Target<T> target) {
+
+		classes.compute(target, (k, v) -> {
+
+			if (v == null)
+				return 1;
+
+			return v++;
+		});
+	}
+
 	@Override
 	public LikelihoodResult<T> likelihood(Fact<T> input) {
 		TermsVector factTerms = TermsVectorBuilder.build(input, this.complexity);
