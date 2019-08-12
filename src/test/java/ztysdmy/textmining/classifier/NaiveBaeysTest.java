@@ -105,4 +105,30 @@ public class NaiveBaeysTest {
 		Assert.assertEquals(1.0d, result.probability(), 0.d);
 	}
 
+	
+	@Test
+	public void testLikelihood2() throws Exception {
+
+		NaiveBaeys<String> naiveBayes = new NaiveBaeys<>();
+		naiveBayes.setTotalFacts(2);
+
+		Target<String> target1 = new Target<>("target1");
+
+		naiveBayes.addTarget(target1);
+
+		Target<String> target2 = new Target<>("target2");
+
+		naiveBayes.addTarget(target2);
+
+		
+		TermStatistics termStatistics1 = new TermStatistics();
+		termStatistics1.incrementOccuriens(target1);
+		termStatistics1.incrementOccuriens(target2);
+
+		naiveBayes.termsStatistics.put(new Term("test"), termStatistics1);
+
+		var result = naiveBayes.likelihood(new Fact<String>("test"));
+		Assert.assertEquals(0.25d, result.probability(), 0.d);
+	}
+
 }

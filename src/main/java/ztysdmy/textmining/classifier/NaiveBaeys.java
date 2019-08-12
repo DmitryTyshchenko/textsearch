@@ -83,6 +83,14 @@ public class NaiveBaeys<T> implements Classifier<T> {
 			totalOccuriences++;
 		}
 
+		int termInClassOccurencies(Target<?> target) {
+			var result = inTheClass.get(target);
+			// Laplace smoothing
+			if (result == null)
+				return 1;
+			return result;
+		}
+
 		int totalOccuriences() {
 			return this.totalOccuriences;
 		}
@@ -90,9 +98,18 @@ public class NaiveBaeys<T> implements Classifier<T> {
 		private int totalOccuriences;
 	}
 
-	private TermStatistics termStatitics(Term term) {
+	TermStatistics termStatitics(Term term) {
 
-		return this.termsStatistics.get(term);
+		var result = this.termsStatistics.get(term);
+
+		// Laplace smoothing
+		if (result == null) {
+
+			result = new TermStatistics();
+			result.totalOccuriences=1;
+		}
+
+		return result;
 	}
 
 	Function<TermsVector, Double> denominator = tv -> {
@@ -105,9 +122,9 @@ public class NaiveBaeys<T> implements Classifier<T> {
 	Function<Target<?>, Function<Term, Double>> pxc = target -> term -> pxc(target, term);
 
 	private double pxc(Target<?> target, Term term) {
-		var termStatistic = termsStatistics.get(term);
+		var termStatistic = termStatitics(term);
 		// calculate p(x|c)
-		var termInClassOccurencies = termStatistic.inTheClass.get(target);
+		var termInClassOccurencies = termStatistic.termInClassOccurencies(target);
 		var pxc = (termInClassOccurencies * 1.d) / termStatistic.totalOccuriences();
 		return pxc;
 	}
