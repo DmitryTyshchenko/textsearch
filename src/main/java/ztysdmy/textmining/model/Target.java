@@ -12,10 +12,11 @@ public class Target<T> {
 		return this.value;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof Target) {
-			return this.value.equals(((Target<?>) object).value());
+			return this.value.equals(((Target) object).value());
 		}
 		return false;
 	}

@@ -42,8 +42,7 @@ public class NaiveBaeys<T> implements Classifier<T> {
 
 			if (v == null)
 				return 1;
-
-			return v++;
+			return ++v;
 		});
 	}
 
@@ -77,7 +76,7 @@ public class NaiveBaeys<T> implements Classifier<T> {
 				if (v == null) {
 					return 1;
 				}
-				return v++;
+				return ++v;
 			});
 
 			totalOccuriences++;
@@ -106,7 +105,7 @@ public class NaiveBaeys<T> implements Classifier<T> {
 		if (result == null) {
 
 			result = new TermStatistics();
-			result.totalOccuriences=1;
+			result.totalOccuriences = 1;
 		}
 
 		return result;

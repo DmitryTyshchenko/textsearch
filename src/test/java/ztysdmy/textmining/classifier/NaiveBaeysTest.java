@@ -48,11 +48,11 @@ public class NaiveBaeysTest {
 
 		Target<String> target = new Target<>("test");
 		NaiveBaeys<String> naiveBayes = new NaiveBaeys<>();
-		for (int i = 0; i < 10; i++) {
+		withFor(10, ()->{
 			naiveBayes.addTarget(target);
-		}
+		});
 		var result = naiveBayes.classes.get(target);
-		Assert.assertEquals(Integer.valueOf(1), result);
+		Assert.assertEquals(Integer.valueOf(10), result);
 	}
 
 	@Test
@@ -105,7 +105,6 @@ public class NaiveBaeysTest {
 		Assert.assertEquals(1.0d, result.probability(), 0.d);
 	}
 
-	
 	@Test
 	public void testLikelihood2() throws Exception {
 
@@ -120,7 +119,6 @@ public class NaiveBaeysTest {
 
 		naiveBayes.addTarget(target2);
 
-		
 		TermStatistics termStatistics1 = new TermStatistics();
 		termStatistics1.incrementOccuriens(target1);
 		termStatistics1.incrementOccuriens(target2);
@@ -131,4 +129,42 @@ public class NaiveBaeysTest {
 		Assert.assertEquals(0.25d, result.probability(), 0.d);
 	}
 
+	@Test
+	public void testLikelihood3() throws Exception {
+
+		NaiveBaeys<String> naiveBayes = new NaiveBaeys<>();
+		naiveBayes.setTotalFacts(10);
+
+		Target<String> target1 = new Target<>("target1");
+
+		withFor(5, ()->naiveBayes.addTarget(target1));
+		
+		Target<String> target2 = new Target<>("target2");
+
+		withFor(5, ()->naiveBayes.addTarget(target2));
+
+		TermStatistics termStatistics1 = new TermStatistics();
+		termStatistics1.incrementOccuriens(target1);
+		termStatistics1.incrementOccuriens(target2);
+
+		naiveBayes.termsStatistics.put(new Term("test"), termStatistics1);
+
+		TermStatistics termStatistics2 = new TermStatistics();
+		termStatistics2.incrementOccuriens(target1);
+		withFor(9, ()->{
+			termStatistics2.incrementOccuriens(target2);
+		});
+
+		naiveBayes.termsStatistics.put(new Term("test2"), termStatistics2);
+		var result = naiveBayes.likelihood(new Fact<String>("test2"));
+		Assert.assertEquals("target2",result.target().value());
+	}
+	
+	private void withFor(int end, Runnable action) {
+		
+		for (int i=0;i<end;i++) {
+			action.run();
+		}
+	}
+	
 }
