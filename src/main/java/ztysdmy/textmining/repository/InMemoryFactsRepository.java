@@ -3,9 +3,12 @@ package ztysdmy.textmining.repository;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Spliterators;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import ztysdmy.textmining.model.Fact;
 
@@ -38,16 +41,18 @@ public class InMemoryFactsRepository<T> implements FactsRepository<T> {
 
 		long stamp = readWriteLock.writeLock();
 		try {
+			@SuppressWarnings("unchecked")
+			var localFacts = (HashMap<Long, Fact<T>>)this.facts.clone();
 			
-			addFacts(facts, this.facts);
-			
+			this.facts = addToLocalFacts(facts, localFacts);
+
 		} finally {
 			readWriteLock.unlockWrite(stamp);
 		}
 
 	}
 
-	private HashMap<Long, Fact<T>> addFacts(Collection<Fact<T>> facts, HashMap<Long, Fact<T>> localFacts) {
+	private HashMap<Long, Fact<T>> addToLocalFacts(Collection<Fact<T>> facts, HashMap<Long, Fact<T>> localFacts) {
 
 		for (Fact<T> fact : facts) {
 			localFacts.put(fact.identifier(), fact);
@@ -100,5 +105,13 @@ public class InMemoryFactsRepository<T> implements FactsRepository<T> {
 			return iterator.next().getValue();
 		}
 
+	}
+
+	@Override
+	public Stream<Fact<T>> stream() {
+
+		var spliterator = Spliterators.spliteratorUnknownSize(iterator(), 0);
+
+		return StreamSupport.stream(spliterator, false);
 	}
 }

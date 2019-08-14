@@ -31,6 +31,12 @@ public class InMemoryFactRepositoryTest {
 				var iterator = textRepository.iterator();
 				while (iterator.hasNext()) {
 					documentSet.add(iterator.next());
+					try {
+						Thread.currentThread().sleep(100);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 
@@ -45,7 +51,9 @@ public class InMemoryFactRepositoryTest {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			for (int i=0; i<1000; i++) {
 			textRepository.add(documents);
+			}
 		});
 
 		Assert.assertTrue(!futureDocuments.get().isEmpty());
@@ -53,7 +61,7 @@ public class InMemoryFactRepositoryTest {
 
 	private Collection<Fact<Double>> facts() {
 
-		var result = List.of(fact("test"), fact("test1"));
+		var result = List.of(fact("test"), fact("test1"), fact("test2"), fact("test3"), fact("test4"), fact("test5"));
 		return result;
 	}
 
@@ -69,7 +77,7 @@ public class InMemoryFactRepositoryTest {
 		textRepository.clear();
 		textRepository.add(facts());
 		var size = textRepository.size();
-		Assert.assertEquals(2, size);
+		Assert.assertEquals(6, size);
 	}
 
 }
