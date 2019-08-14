@@ -36,7 +36,7 @@ public class NaiveBaeys<T> implements Classifier<T> {
 		return totalFacts;
 	}
 
-	public void addTarget(Target<T> target) {
+	public void targetOccurrencies(Target<T> target) {
 
 		classes.compute(target, (k, v) -> {
 
@@ -70,7 +70,7 @@ public class NaiveBaeys<T> implements Classifier<T> {
 	static class TermStatistics {
 		HashMap<Target<?>, Integer> inTheClass = new HashMap<>();
 
-		void incrementOccuriens(Target<?> target) {
+		void occurrenciesInTarget(Target<?> target) {
 
 			inTheClass.compute(target, (k, v) -> {
 				if (v == null) {
