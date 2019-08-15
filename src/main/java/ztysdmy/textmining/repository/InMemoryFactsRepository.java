@@ -44,7 +44,8 @@ public class InMemoryFactsRepository<T> implements FactsRepository<T> {
 			@SuppressWarnings("unchecked")
 			var localFacts = (HashMap<Long, Fact<T>>)this.facts.clone();
 			
-			this.facts = addToLocalFacts(facts, localFacts);
+			addToLocalFacts(facts, localFacts);
+			this.facts = localFacts;
 
 		} finally {
 			readWriteLock.unlockWrite(stamp);
@@ -52,13 +53,11 @@ public class InMemoryFactsRepository<T> implements FactsRepository<T> {
 
 	}
 
-	private HashMap<Long, Fact<T>> addToLocalFacts(Collection<Fact<T>> facts, HashMap<Long, Fact<T>> localFacts) {
+	private void addToLocalFacts(Collection<Fact<T>> facts, HashMap<Long, Fact<T>> localFacts) {
 
 		for (Fact<T> fact : facts) {
 			localFacts.put(fact.identifier(), fact);
 		}
-
-		return localFacts;
 	}
 
 	private final StampedLock readWriteLock = new StampedLock();

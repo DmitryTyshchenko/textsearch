@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,9 +22,9 @@ public class InMemoryFactRepositoryTest {
 		var documents = facts();
 		var textRepository = new InMemoryFactsRepository<Double>();
 		textRepository.clear();
-		var futureDocuments = CompletableFuture.supplyAsync(() -> {
+		
+		Supplier<Collection<Fact<Double>>> supplier = () -> {
 
-			@SuppressWarnings("unchecked")
 			Collection<Fact<Double>> documentSet = new ArrayList<>();
 
 			while (documentSet.isEmpty()) {
@@ -31,19 +32,21 @@ public class InMemoryFactRepositoryTest {
 				var iterator = textRepository.iterator();
 				while (iterator.hasNext()) {
 					documentSet.add(iterator.next());
-					try {
-						Thread.currentThread().sleep(100);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
 				}
 			}
 
 			return documentSet;
-		});
+		};
 
+		
+		var futureDocuments = CompletableFuture.supplyAsync(supplier);
+		var futureDocuments1 = CompletableFuture.supplyAsync(supplier);
+		var futureDocuments2 = CompletableFuture.supplyAsync(supplier);
+		var futureDocuments3 = CompletableFuture.supplyAsync(supplier);
+		
+		
 		CompletableFuture.runAsync(() -> {
+			
 			try {
 				Thread.currentThread().sleep(2000);
 
@@ -51,12 +54,14 @@ public class InMemoryFactRepositoryTest {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			for (int i=0; i<1000; i++) {
 			textRepository.add(documents);
-			}
+			
 		});
 
 		Assert.assertTrue(!futureDocuments.get().isEmpty());
+		Assert.assertTrue(!futureDocuments1.get().isEmpty());
+		Assert.assertTrue(!futureDocuments2.get().isEmpty());
+		Assert.assertTrue(!futureDocuments3.get().isEmpty());
 	}
 
 	private Collection<Fact<Double>> facts() {
