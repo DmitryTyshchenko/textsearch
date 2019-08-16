@@ -23,7 +23,7 @@ public class NaiveBaeysTest {
 		naiveBayes.setTotalFacts(2);
 
 		TermStatistics termStatistics = new TermStatistics();
-		termStatistics.occurrenciesInTarget(new Target<String>("y"));
+		termStatistics.setOccurrenciesInTarget(new Target<String>("y"));
 		// termStatistics.totalOccuriences = 1;
 
 		naiveBayes.termsStatistics.put(new Term("test"), termStatistics);
@@ -65,8 +65,8 @@ public class NaiveBaeysTest {
 		Target<String> target2 = new Target<>("target2");
 
 		TermStatistics termStatistics = new TermStatistics();
-		termStatistics.occurrenciesInTarget(target1);
-		termStatistics.occurrenciesInTarget(target2);
+		termStatistics.setOccurrenciesInTarget(target1);
+		termStatistics.setOccurrenciesInTarget(target2);
 
 		naiveBayes.termsStatistics.put(new Term("test"), termStatistics);
 
@@ -90,17 +90,11 @@ public class NaiveBaeysTest {
 	public void testLikelihood1() throws Exception {
 
 		NaiveBaeys<String> naiveBayes = new NaiveBaeys<>();
-		naiveBayes.setTotalFacts(1);
-
 		Target<String> target1 = new Target<>("target1");
 
-		naiveBayes.targetOccurrencies(target1);
-
-		TermStatistics termStatistics1 = new TermStatistics();
-		termStatistics1.occurrenciesInTarget(target1);
-
-		naiveBayes.termsStatistics.put(new Term("test"), termStatistics1);
-
+		var fact = new Fact<>("test", target1);
+		naiveBayes.collectFactStatistics(fact);
+		
 		var result = naiveBayes.likelihood(new Fact<String>("test"));
 		Assert.assertEquals(1.0d, result.probability(), 0.d);
 	}
@@ -120,8 +114,8 @@ public class NaiveBaeysTest {
 		naiveBayes.targetOccurrencies(target2);
 
 		TermStatistics termStatistics1 = new TermStatistics();
-		termStatistics1.occurrenciesInTarget(target1);
-		termStatistics1.occurrenciesInTarget(target2);
+		termStatistics1.setOccurrenciesInTarget(target1);
+		termStatistics1.setOccurrenciesInTarget(target2);
 
 		naiveBayes.termsStatistics.put(new Term("test"), termStatistics1);
 
@@ -144,15 +138,15 @@ public class NaiveBaeysTest {
 		withFor(5, ()->naiveBayes.targetOccurrencies(target2));
 
 		TermStatistics termStatistics1 = new TermStatistics();
-		termStatistics1.occurrenciesInTarget(target1);
-		termStatistics1.occurrenciesInTarget(target2);
+		termStatistics1.setOccurrenciesInTarget(target1);
+		termStatistics1.setOccurrenciesInTarget(target2);
 
 		naiveBayes.termsStatistics.put(new Term("test"), termStatistics1);
 
 		TermStatistics termStatistics2 = new TermStatistics();
-		termStatistics2.occurrenciesInTarget(target1);
+		termStatistics2.setOccurrenciesInTarget(target1);
 		withFor(9, ()->{
-			termStatistics2.occurrenciesInTarget(target2);
+			termStatistics2.setOccurrenciesInTarget(target2);
 		});
 
 		naiveBayes.termsStatistics.put(new Term("test2"), termStatistics2);

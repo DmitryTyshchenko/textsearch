@@ -1,6 +1,7 @@
 package ztysdmy.textmining.classifier;
 
 import java.util.HashMap;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import ztysdmy.textmining.model.Fact;
@@ -20,6 +21,10 @@ public class NaiveBaeys<T> implements Classifier<T> {
 	int complexity;
 	int totalFacts;
 
+	private final Consumer<TermStatistics> laplaceSmoothing = x->x.totalOccuriences=1;
+	private final Consumer<TermStatistics> doNothing = x->{};
+	
+	
 	public NaiveBaeys() {
 		this(1);
 	}
@@ -28,15 +33,17 @@ public class NaiveBaeys<T> implements Classifier<T> {
 		this.complexity = complexity;
 	}
 
-	public void setTotalFacts(int totalFacts) {
+	//used only in Tests; consider to remove it
+	void setTotalFacts(int totalFacts) {
 		this.totalFacts = totalFacts;
 	}
 
-	public int totalFacts() {
-		return totalFacts;
+	
+	int totalFacts() {
+		return this.totalFacts;
 	}
-
-	public void targetOccurrencies(Target<T> target) {
+	
+	void targetOccurrencies(Target<T> target) {
 
 		classes.compute(target, (k, v) -> {
 
@@ -46,6 +53,27 @@ public class NaiveBaeys<T> implements Classifier<T> {
 		});
 	}
 
+	public void collectFactStatistics(Fact<T> fact) {
+		var target = fact.target().orElseThrow(()->new RuntimeException("Fact without target"));
+		totalFacts++;
+		targetOccurrencies(target);
+		
+		var terms = TermsVectorBuilder.build(fact, this.complexity);
+		
+		var consumer = computeTermStatistics.apply(target);
+		
+		terms.terms().forEach(consumer);
+	}
+	
+	Function<Target<T>, Consumer<Term>> computeTermStatistics = target->term-> {
+		
+		var termStatistics =  termStatitics(term, doNothing);
+		
+		termStatistics.setOccurrenciesInTarget(target);
+	};
+	
+	
+	
 	@Override
 	public LikelihoodResult<T> likelihood(Fact<T> input) {
 		TermsVector factTerms = TermsVectorBuilder.build(input, this.complexity);
@@ -70,7 +98,7 @@ public class NaiveBaeys<T> implements Classifier<T> {
 	static class TermStatistics {
 		HashMap<Target<?>, Integer> inTheClass = new HashMap<>();
 
-		void occurrenciesInTarget(Target<?> target) {
+		void setOccurrenciesInTarget(Target<?> target) {
 
 			inTheClass.compute(target, (k, v) -> {
 				if (v == null) {
@@ -96,8 +124,8 @@ public class NaiveBaeys<T> implements Classifier<T> {
 
 		private int totalOccuriences;
 	}
-
-	TermStatistics termStatitics(Term term) {
+	
+	TermStatistics termStatitics(Term term, Consumer<TermStatistics> ifTermStatistcisIsNull) {
 
 		var result = this.termsStatistics.get(term);
 
@@ -105,14 +133,14 @@ public class NaiveBaeys<T> implements Classifier<T> {
 		if (result == null) {
 
 			result = new TermStatistics();
-			result.totalOccuriences = 1;
+			ifTermStatistcisIsNull.accept(result);
 		}
 
 		return result;
 	}
 
 	Function<TermsVector, Double> denominator = tv -> {
-		return tv.terms().stream().map(x -> termStatitics(x)).map(x -> (x.totalOccuriences() * 1.d) / totalFacts())
+		return tv.terms().stream().map(x -> termStatitics(x, laplaceSmoothing)).map(x -> (x.totalOccuriences() * 1.d) / totalFacts())
 				.reduce(1.d, (x, y) -> x * y);
 	};
 
@@ -121,7 +149,7 @@ public class NaiveBaeys<T> implements Classifier<T> {
 	Function<Target<?>, Function<Term, Double>> pxc = target -> term -> pxc(target, term);
 
 	private double pxc(Target<?> target, Term term) {
-		var termStatistic = termStatitics(term);
+		var termStatistic = termStatitics(term, laplaceSmoothing);
 		// calculate p(x|c)
 		var termInClassOccurencies = termStatistic.termInClassOccurencies(target);
 		var pxc = (termInClassOccurencies * 1.d) / termStatistic.totalOccuriences();
