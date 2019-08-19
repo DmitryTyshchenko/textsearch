@@ -6,7 +6,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ztysdmy.textmining.classifier.Classifier;
-import ztysdmy.textmining.classifier.KNeighborEstimatorImpl;
 import ztysdmy.textmining.classifier.TanimotoDistance;
 import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.Target;
@@ -32,7 +31,7 @@ public class KNeighborEstimatorImplTest {
 		factRepository.add(facts);
 		
 		Classifier<String> estimator = new KNeighborEstimatorImplBuilder<String>(factRepository, new TanimotoDistance())
-				.with(builder -> builder.complexity = 1).build();
+				.with(builder -> builder.complexity = 0).build();
 
 		Fact<String> toEval = new Fact<>("correct text");
 

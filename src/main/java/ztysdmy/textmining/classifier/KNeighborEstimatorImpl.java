@@ -19,7 +19,7 @@ public class KNeighborEstimatorImpl<T> implements Classifier<T> {
 	private final BiFunction<TermsVector, TermsVector, Double> estimationFunction;
 	private FactsRepository<T> factsRespository;
 
-	int complexity = 1;
+	int complexity;
 
 	int neighborns = 1;
 
@@ -69,7 +69,7 @@ public class KNeighborEstimatorImpl<T> implements Classifier<T> {
 	private BiFunction<Target<T>, Integer, Integer> mergeFunc = (k, v) -> {
 		if (v == null)
 			return 1;
-		return v++;
+		return ++v;
 	};
 
 	private ArrayList<FactPlusWeight<T>> collectDistances(TermsVector toEvalTermsVector) {

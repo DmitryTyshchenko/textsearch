@@ -90,10 +90,12 @@ public class NaiveBaeys<T> implements Classifier<T> {
 	//TODO consider to apply laplace smoothing instead
 	private TermsVector filterTermsWithoutStatistics(TermsVector termsVector) {
 		TermsVector newTermsVector = new TermsVector();
+		
 		termsVector.terms().stream().forEach(term->{
 			if (termsStatistics.get(term)!=null)
 				newTermsVector.addTerm(term);
 		});
+		
 		return newTermsVector;
 	}
 
@@ -119,9 +121,14 @@ public class NaiveBaeys<T> implements Classifier<T> {
 				return ++v;
 			});
 
-			termTotalOccuriencies++;
+			increaseTermTotalOccuriencies();
 		}
 
+		private void increaseTermTotalOccuriencies() {
+			
+			termTotalOccuriencies++;
+		}
+		
 		int termInClassOccurencies(Target<?> target) {
 			var result = termInClassOccurencies.get(target);
 			return result;
