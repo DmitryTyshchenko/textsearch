@@ -96,6 +96,7 @@ public class NaiveBaeys<T> implements Classifier<T> {
 	}
 
 	static class TermStatistics {
+		
 		HashMap<Target<?>, Integer> inTheClass = new HashMap<>();
 
 		void setOccurrenciesInTarget(Target<?> target) {
