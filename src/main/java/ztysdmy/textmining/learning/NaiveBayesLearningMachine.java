@@ -11,7 +11,7 @@ public class NaiveBayesLearningMachine<T> implements Supervized<T> {
 	
 	public NaiveBayesLearningMachine(FactsRepository<T> factsRepository) {
 		
-		this(factsRepository, 1);
+		this(factsRepository, 0);
 	}
 	
     public NaiveBayesLearningMachine(FactsRepository<T> factsRepository, int complexity) {

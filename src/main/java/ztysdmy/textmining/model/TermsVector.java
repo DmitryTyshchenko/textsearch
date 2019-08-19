@@ -10,7 +10,7 @@ public class TermsVector {
 
 	final HashSet<Term> terms = new HashSet<>();
 
-	TermsVector() {
+	public TermsVector() {
 	}
 
 	public Set<Term> terms() {
@@ -24,9 +24,14 @@ public class TermsVector {
 	public void addTerm(String termValue) {
 
 		var term = new Term(termValue);
-		this.terms.add(term);
+		addTerm(term);
 	}
 
+
+	public void addTerm(Term term) {
+		this.terms.add(term);
+	}
+	
 	/**
 	 * @param input
 	 * @return

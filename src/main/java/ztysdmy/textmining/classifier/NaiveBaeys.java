@@ -21,28 +21,23 @@ public class NaiveBaeys<T> implements Classifier<T> {
 	int complexity;
 	int totalFacts;
 
-	private final Consumer<TermStatistics> laplaceSmoothing = x->x.totalOccuriences=1;
-	private final Consumer<TermStatistics> doNothing = x->{};
-	
-	
 	public NaiveBaeys() {
-		this(1);
+		this(0);
 	}
 
 	public NaiveBaeys(int complexity) {
 		this.complexity = complexity;
 	}
 
-	//used only in Tests; consider to remove it
+	// used only in Tests; consider to remove it
 	void setTotalFacts(int totalFacts) {
 		this.totalFacts = totalFacts;
 	}
 
-	
 	int totalFacts() {
 		return this.totalFacts;
 	}
-	
+
 	void targetOccurrencies(Target<T> target) {
 
 		classes.compute(target, (k, v) -> {
@@ -53,30 +48,36 @@ public class NaiveBaeys<T> implements Classifier<T> {
 		});
 	}
 
-	public void collectFactStatistics(Fact<T> fact) {
-		var target = fact.target().orElseThrow(()->new RuntimeException("Fact without target"));
+	private void increaseTotalFacts() {
+		
 		totalFacts++;
-		targetOccurrencies(target);
 		
-		var terms = TermsVectorBuilder.build(fact, this.complexity);
-		
-		var consumer = computeTermStatistics.apply(target);
-		
-		terms.terms().forEach(consumer);
 	}
 	
-	Function<Target<T>, Consumer<Term>> computeTermStatistics = target->term-> {
-		
-		var termStatistics =  termStatitics(term, doNothing);
-		
-		termStatistics.setOccurrenciesInTarget(target);
+	public void collectFactStatistics(Fact<T> fact) {
+		increaseTotalFacts();
+		var target = fact.target().orElseThrow(() -> new RuntimeException("Fact without target"));
+		targetOccurrencies(target);
+		var terms = TermsVectorBuilder.build(fact, this.complexity);
+		var consumer = computeTermStatistics.apply(target);
+		terms.terms().forEach(consumer);
+	}
+
+	Function<Target<T>, Consumer<Term>> computeTermStatistics = target -> term -> {
+
+		termsStatistics.compute(term, (k,v)->{
+			
+			if (v==null)
+				v = new TermStatistics();
+			
+			v.update(target);
+			return v;
+		});
 	};
-	
-	
-	
+
 	@Override
 	public LikelihoodResult<T> likelihood(Fact<T> input) {
-		TermsVector factTerms = TermsVectorBuilder.build(input, this.complexity);
+		TermsVector factTerms = filterTermsWithoutStatistics(TermsVectorBuilder.build(input, this.complexity));
 
 		LikelihoodResult<T> IDENTITY = new LikelihoodResult<>(null, 0.d);
 
@@ -84,6 +85,16 @@ public class NaiveBaeys<T> implements Classifier<T> {
 				.reduce(IDENTITY, (a, b) -> chooseMax(a, b));
 
 		return result;
+	}
+	
+	//TODO consider to apply laplace smoothing instead
+	private TermsVector filterTermsWithoutStatistics(TermsVector termsVector) {
+		TermsVector newTermsVector = new TermsVector();
+		termsVector.terms().stream().forEach(term->{
+			if (termsStatistics.get(term)!=null)
+				newTermsVector.addTerm(term);
+		});
+		return newTermsVector;
 	}
 
 	LikelihoodResult<T> chooseMax(LikelihoodResult<T> a, LikelihoodResult<T> b) {
@@ -96,53 +107,48 @@ public class NaiveBaeys<T> implements Classifier<T> {
 	}
 
 	static class TermStatistics {
-		
-		HashMap<Target<?>, Integer> inTheClass = new HashMap<>();
 
-		void setOccurrenciesInTarget(Target<?> target) {
+		HashMap<Target<?>, Integer> termInClassOccurencies = new HashMap<>();
 
-			inTheClass.compute(target, (k, v) -> {
+		void update(Target<?> target) {
+
+			termInClassOccurencies.compute(target, (k, v) -> {
 				if (v == null) {
 					return 1;
 				}
 				return ++v;
 			});
 
-			totalOccuriences++;
+			termTotalOccuriencies++;
 		}
 
 		int termInClassOccurencies(Target<?> target) {
-			var result = inTheClass.get(target);
-			// Laplace smoothing
-			if (result == null)
-				return 1;
+			var result = termInClassOccurencies.get(target);
 			return result;
 		}
 
-		int totalOccuriences() {
-			return this.totalOccuriences;
+		int termTotalOccuriencies() {
+			return this.termTotalOccuriencies;
 		}
 
-		private int totalOccuriences;
+		private int termTotalOccuriencies;
 	}
-	
-	TermStatistics termStatitics(Term term, Consumer<TermStatistics> ifTermStatistcisIsNull) {
+
+	TermStatistics getOrCreateTermsStatistics(Term term) {
 
 		var result = this.termsStatistics.get(term);
 
-		// Laplace smoothing
-		if (result == null) {
-
+		if (result==null)
 			result = new TermStatistics();
-			ifTermStatistcisIsNull.accept(result);
-		}
 
 		return result;
 	}
 
 	Function<TermsVector, Double> denominator = tv -> {
-		return tv.terms().stream().map(x -> termStatitics(x, laplaceSmoothing)).map(x -> (x.totalOccuriences() * 1.d) / totalFacts())
-				.reduce(1.d, (x, y) -> x * y);
+		var result = tv.terms().stream().map(x -> getOrCreateTermsStatistics(x))
+				.map(x -> (x.termTotalOccuriencies() * 1.d) / totalFacts()).reduce(1.d, (x, y) -> x * y);
+
+		return result;
 	};
 
 	Function<Target<?>, Double> py = target -> classes.get(target) * 1.d / totalFacts();
@@ -150,10 +156,10 @@ public class NaiveBaeys<T> implements Classifier<T> {
 	Function<Target<?>, Function<Term, Double>> pxc = target -> term -> pxc(target, term);
 
 	private double pxc(Target<?> target, Term term) {
-		var termStatistic = termStatitics(term, laplaceSmoothing);
+		var termStatistic = getOrCreateTermsStatistics(term);
 		// calculate p(x|c)
 		var termInClassOccurencies = termStatistic.termInClassOccurencies(target);
-		var pxc = (termInClassOccurencies * 1.d) / termStatistic.totalOccuriences();
+		var pxc = (termInClassOccurencies * 1.d) / termStatistic.termTotalOccuriencies();
 		return pxc;
 	}
 

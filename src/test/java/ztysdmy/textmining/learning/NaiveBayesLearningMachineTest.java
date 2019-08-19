@@ -26,9 +26,10 @@ public class NaiveBayesLearningMachineTest {
 
 		Classifier<String> classifier = learningMachine.build();
 
-		var result = classifier.likelihood(new Fact<String>("dsfsd fefe test"));
+		var result = classifier.likelihood(new Fact<String>("sdfsd sfsfew test"));
 
 		Assert.assertEquals("classB", result.target().value());
+		Assert.assertTrue(result.probability()<1.d);
 
 	}
 

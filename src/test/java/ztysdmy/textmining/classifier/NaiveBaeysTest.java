@@ -23,7 +23,7 @@ public class NaiveBaeysTest {
 		naiveBayes.setTotalFacts(2);
 
 		TermStatistics termStatistics = new TermStatistics();
-		termStatistics.setOccurrenciesInTarget(new Target<String>("y"));
+		termStatistics.update(new Target<String>("y"));
 		// termStatistics.totalOccuriences = 1;
 
 		naiveBayes.termsStatistics.put(new Term("test"), termStatistics);
@@ -65,8 +65,8 @@ public class NaiveBaeysTest {
 		Target<String> target2 = new Target<>("target2");
 
 		TermStatistics termStatistics = new TermStatistics();
-		termStatistics.setOccurrenciesInTarget(target1);
-		termStatistics.setOccurrenciesInTarget(target2);
+		termStatistics.update(target1);
+		termStatistics.update(target2);
 
 		naiveBayes.termsStatistics.put(new Term("test"), termStatistics);
 
@@ -114,8 +114,8 @@ public class NaiveBaeysTest {
 		naiveBayes.targetOccurrencies(target2);
 
 		TermStatistics termStatistics1 = new TermStatistics();
-		termStatistics1.setOccurrenciesInTarget(target1);
-		termStatistics1.setOccurrenciesInTarget(target2);
+		termStatistics1.update(target1);
+		termStatistics1.update(target2);
 
 		naiveBayes.termsStatistics.put(new Term("test"), termStatistics1);
 
@@ -138,15 +138,15 @@ public class NaiveBaeysTest {
 		withFor(5, ()->naiveBayes.targetOccurrencies(target2));
 
 		TermStatistics termStatistics1 = new TermStatistics();
-		termStatistics1.setOccurrenciesInTarget(target1);
-		termStatistics1.setOccurrenciesInTarget(target2);
+		termStatistics1.update(target1);
+		termStatistics1.update(target2);
 
 		naiveBayes.termsStatistics.put(new Term("test"), termStatistics1);
 
 		TermStatistics termStatistics2 = new TermStatistics();
-		termStatistics2.setOccurrenciesInTarget(target1);
+		termStatistics2.update(target1);
 		withFor(9, ()->{
-			termStatistics2.setOccurrenciesInTarget(target2);
+			termStatistics2.update(target2);
 		});
 
 		naiveBayes.termsStatistics.put(new Term("test2"), termStatistics2);
