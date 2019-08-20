@@ -8,11 +8,13 @@ import java.util.function.Supplier;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static ztysdmy.textming.FactsUtility.factsSupplier;
 import ztysdmy.textmining.classifier.Classifier;
 import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.Target;
 import ztysdmy.textmining.repository.FactsRepository;
 import ztysdmy.textmining.repository.InMemoryFactsRepository;
+//import static ztysdmy.textmining.FactsUtility.*;
 
 public class NaiveBayesLearningMachineTest {
 
@@ -34,8 +36,8 @@ public class NaiveBayesLearningMachineTest {
 	}
 
 	private void initRepository(FactsRepository<String> factsRepository) {
-
-		factsRepository.add(factsSupplier.get());
+		
+		factsRepository.add(factsSupplier().get());
 	}
 
 	Function<String, Target<String>> toTarget = x -> new Target<String>(x);
