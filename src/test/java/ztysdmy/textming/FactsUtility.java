@@ -17,29 +17,27 @@ public class FactsUtility {
 			var toEval = new IF<Target<String>>(()->a.equals(b), ()->createTarget("classA"));
 			return match(toEval, ()->createTarget("classB"));
 		};
-		
 	}
+		
+	private static Function<Target<String>, Fact<String>> setTargetToFact = x->{
+		var fact = new Fact<String>("test", x);
+		return fact;
+	};
 	
 	public static Supplier<Collection<Fact<String>>> factsSupplier() {
 		return ()->{
-			
-			Integer THRESHOLD = Integer.valueOf(1);
-			
-			Function<Target<String>, Fact<String>> setTargetToFact = x->{
-				var fact = new Fact<String>("test", x);
-				return fact;
-			};
-			
+
 			ArrayList<Fact<String>> collector = new ArrayList<>();
-					
+	
+			//code below is no functional but let it be pragmatics
 			for (int i=0;i<4;i++) {
-				collector.add(chooseTarget().apply(THRESHOLD).andThen(setTargetToFact).apply(i));
+				collector.add(chooseTarget().apply(1).andThen(setTargetToFact).apply(i));
 			}
 			
 			return collector;
 		};
 	}
-		
+	
 	private static Target<String> createTarget(String value) {
 		return new Target<String>(value);
 	}
