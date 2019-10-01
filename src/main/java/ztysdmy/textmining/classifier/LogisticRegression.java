@@ -13,9 +13,9 @@ import ztysdmy.textmining.model.TermsVectorBuilder;
 
 public class LogisticRegression<T> implements Classifier<T> {
 
-	private Monomial IDENTITY = new Monomial();
+	Monomial IDENTITY = new Monomial();
 
-	private HashMap<Term, Monomial> POLYNOMIAL = new HashMap<>();
+	HashMap<Term, Monomial> POLYNOMIAL = new HashMap<>();
 
 	private final Target<T> target;
 
