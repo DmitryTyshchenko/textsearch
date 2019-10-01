@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.function.Function;
 
 import ztysdmy.textmining.functions.Sigmoid;
+import ztysdmy.textmining.model.Binomial;
 import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.PredictionResult;
 import ztysdmy.textmining.model.Target;
@@ -11,23 +12,23 @@ import ztysdmy.textmining.model.Term;
 import ztysdmy.textmining.model.TermsVector;
 import ztysdmy.textmining.model.TermsVectorBuilder;
 
-public class LogisticRegression<T> implements Classifier<T> {
+public class LogisticRegression implements Classifier<Binomial> {
 
 	Monomial IDENTITY = new Monomial();
 
 	HashMap<Term, Monomial> POLYNOMIAL = new HashMap<>();
 
-	private final Target<T> target;
+	private final Target<Binomial> target;
 
-	public LogisticRegression(Target<T> category) {
+	public LogisticRegression(Target<Binomial> category) {
 		this.target = category;
 	}
 
 	@Override
-	public PredictionResult<T> predict(Fact<T> fact) {
+	public PredictionResult<Binomial> predict(Fact<Binomial> fact) {
 		var terms = TermsVectorBuilder.build(fact, 1);
 		var result = sumOfMonomials.andThen(applySigmoid).apply(terms);
-		return new PredictionResult<T>(target, result);
+		return new PredictionResult<Binomial>(target, result);
 	}
 
 	Function<TermsVector, Double> sumOfMonomials = t -> sumOfMonomials(t);
@@ -64,4 +65,6 @@ public class LogisticRegression<T> implements Classifier<T> {
 			return this.weight;
 		}
 	}
+
+	
 }

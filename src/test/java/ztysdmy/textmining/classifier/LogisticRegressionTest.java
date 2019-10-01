@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ztysdmy.textmining.classifier.LogisticRegression.Monomial;
+import ztysdmy.textmining.model.Binomial;
 import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.Target;
 import ztysdmy.textmining.model.Term;
@@ -13,17 +14,17 @@ public class LogisticRegressionTest {
 
 	@Test
 	public void shouldProcessEmpty() throws Exception {
-		Target<String> target = new Target<String>("YES");
-		LogisticRegression<String> logisticRegression = new LogisticRegression<>(target);
-		Fact<String> fact = new Fact<>("test");
+		Target<Binomial> target = new Target<>(Binomial.YES);
+		LogisticRegression logisticRegression = new LogisticRegression(target);
+		Fact<Binomial> fact = new Fact<>("test");
 		var result = logisticRegression.predict(fact);
 		Assert.assertEquals(0.5d, result.probability(), 0.d);
 	}
 	
 	@Test
 	public void testSumOfMonomials() throws Exception {
-		Target<String> target = new Target<String>("YES");
-		LogisticRegression<String> logisticRegression = new LogisticRegression<>(target);
+		Target<Binomial> target = new Target<Binomial>(Binomial.YES);
+		LogisticRegression logisticRegression = new LogisticRegression(target);
 		logisticRegression.IDENTITY.updateWeight(1.d);
 		Term term = new Term("a");
 		Monomial monomial = new Monomial();
