@@ -16,7 +16,7 @@ public class LogisticRegressionTest {
 		Target<String> target = new Target<String>("YES");
 		LogisticRegression<String> logisticRegression = new LogisticRegression<>(target);
 		Fact<String> fact = new Fact<>("test");
-		var result = logisticRegression.likelihood(fact);
+		var result = logisticRegression.predict(fact);
 		Assert.assertEquals(0.5d, result.probability(), 0.d);
 	}
 	

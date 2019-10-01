@@ -1,11 +1,11 @@
 package ztysdmy.textmining.model;
 
-public class LikelihoodResult<T> {
+public class PredictionResult<T> {
 	
 	private final Target<T> target;
 	private final Double probability;
 	
-	public LikelihoodResult(Target<T> target, Double probability) {
+	public PredictionResult(Target<T> target, Double probability) {
 		this.target = target;
 		this.probability = probability;
 	}

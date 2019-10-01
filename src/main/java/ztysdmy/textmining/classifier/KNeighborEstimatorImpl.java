@@ -8,7 +8,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import ztysdmy.textmining.model.Fact;
-import ztysdmy.textmining.model.LikelihoodResult;
+import ztysdmy.textmining.model.PredictionResult;
 import ztysdmy.textmining.model.Target;
 import ztysdmy.textmining.model.TermsVector;
 import ztysdmy.textmining.model.TermsVectorBuilder;
@@ -30,13 +30,13 @@ public class KNeighborEstimatorImpl<T> implements Classifier<T> {
 	}
 
 	@Override
-	public LikelihoodResult<T> likelihood(Fact<T> input) {
+	public PredictionResult<T> predict(Fact<T> input) {
 		var tempResults = collectDistances(TermsVectorBuilder.build(input, this.complexity));
 		Collections.sort(tempResults, this.resultComparator);
 		return likelihood2(tempResults);
 	}
 
-	private LikelihoodResult<T> likelihood2(ArrayList<FactPlusWeight<T>> estimationsResult) {
+	private PredictionResult<T> likelihood2(ArrayList<FactPlusWeight<T>> estimationsResult) {
 
 		HashMap<Target<T>, Integer> innerMap = new HashMap<Target<T>, Integer>();
 		Target<T> clazz = null;
@@ -61,7 +61,7 @@ public class KNeighborEstimatorImpl<T> implements Classifier<T> {
 
 		var probability = occurrences * 1.d / counter;
 
-		LikelihoodResult<T> result = new LikelihoodResult<T>(clazz, probability);
+		PredictionResult<T> result = new PredictionResult<T>(clazz, probability);
 		return result;
 
 	}

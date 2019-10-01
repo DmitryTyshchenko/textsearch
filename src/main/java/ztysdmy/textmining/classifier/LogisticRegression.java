@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import ztysdmy.textmining.functions.Sigmoid;
 import ztysdmy.textmining.model.Fact;
-import ztysdmy.textmining.model.LikelihoodResult;
+import ztysdmy.textmining.model.PredictionResult;
 import ztysdmy.textmining.model.Target;
 import ztysdmy.textmining.model.Term;
 import ztysdmy.textmining.model.TermsVector;
@@ -24,10 +24,10 @@ public class LogisticRegression<T> implements Classifier<T> {
 	}
 
 	@Override
-	public LikelihoodResult<T> likelihood(Fact<T> fact) {
+	public PredictionResult<T> predict(Fact<T> fact) {
 		var terms = TermsVectorBuilder.build(fact, 1);
 		var result = sumOfMonomials.andThen(applySigmoid).apply(terms);
-		return new LikelihoodResult<T>(target, result);
+		return new PredictionResult<T>(target, result);
 	}
 
 	Function<TermsVector, Double> sumOfMonomials = t -> sumOfMonomials(t);

@@ -6,7 +6,7 @@ import org.junit.Test;
 import ztysdmy.textmining.classifier.NaiveBaeys;
 import ztysdmy.textmining.classifier.NaiveBaeys.TermStatistics;
 import ztysdmy.textmining.model.Fact;
-import ztysdmy.textmining.model.LikelihoodResult;
+import ztysdmy.textmining.model.PredictionResult;
 import ztysdmy.textmining.model.Target;
 import ztysdmy.textmining.model.Term;
 import ztysdmy.textmining.model.TermsVectorBuilder;
@@ -79,8 +79,8 @@ public class NaiveBaeysTest {
 	public void shouldChooseMax() throws Exception {
 
 		NaiveBaeys<String> naiveBayes = new NaiveBaeys<>();
-		var result1 = new LikelihoodResult<String>(new Target<>("a"), Double.valueOf(0.5d));
-		var result2 = new LikelihoodResult<String>(new Target<>("b"), Double.valueOf(0.7d));
+		var result1 = new PredictionResult<String>(new Target<>("a"), Double.valueOf(0.5d));
+		var result2 = new PredictionResult<String>(new Target<>("b"), Double.valueOf(0.7d));
 		var result = naiveBayes.chooseMax(result1, result2);
 		var value = result.target().value();
 		Assert.assertEquals("b", value);
@@ -95,7 +95,7 @@ public class NaiveBaeysTest {
 		var fact = new Fact<>("test", target1);
 		naiveBayes.collectFactStatistics(fact);
 		
-		var result = naiveBayes.likelihood(new Fact<String>("test"));
+		var result = naiveBayes.predict(new Fact<String>("test"));
 		Assert.assertEquals(1.0d, result.probability(), 0.d);
 	}
 
@@ -119,7 +119,7 @@ public class NaiveBaeysTest {
 
 		naiveBayes.termsStatistics.put(new Term("test"), termStatistics1);
 
-		var result = naiveBayes.likelihood(new Fact<String>("test"));
+		var result = naiveBayes.predict(new Fact<String>("test"));
 		Assert.assertEquals(0.25d, result.probability(), 0.d);
 	}
 
@@ -150,7 +150,7 @@ public class NaiveBaeysTest {
 		});
 
 		naiveBayes.termsStatistics.put(new Term("test2"), termStatistics2);
-		var result = naiveBayes.likelihood(new Fact<String>("test2"));
+		var result = naiveBayes.predict(new Fact<String>("test2"));
 		Assert.assertEquals("target2",result.target().value());
 	}
 	

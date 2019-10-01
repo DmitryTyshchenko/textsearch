@@ -35,7 +35,7 @@ public class KNeighborEstimatorImplTest {
 
 		Fact<String> toEval = new Fact<>("correct text");
 
-		var estimated = estimator.likelihood(toEval);
+		var estimated = estimator.predict(toEval);
 
 		String estimatedClass = estimated.target().value();
 

@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import ztysdmy.textmining.model.Fact;
-import ztysdmy.textmining.model.LikelihoodResult;
+import ztysdmy.textmining.model.PredictionResult;
 import ztysdmy.textmining.model.Target;
 import ztysdmy.textmining.model.Term;
 import ztysdmy.textmining.model.TermsVector;
@@ -74,12 +74,12 @@ public class NaiveBaeys<T> implements Classifier<T> {
 	};
 
 	@Override
-	public LikelihoodResult<T> likelihood(Fact<T> input) {
+	public PredictionResult<T> predict(Fact<T> input) {
 		TermsVector factTerms = filterTermsWithoutStatistics(TermsVectorBuilder.build(input, this.complexity));
 
-		LikelihoodResult<T> IDENTITY = new LikelihoodResult<>(null, 0.d);
+		PredictionResult<T> IDENTITY = new PredictionResult<>(null, 0.d);
 
-		LikelihoodResult<T> result = classes.keySet().stream().map(target -> pcx.apply(target).apply(factTerms))
+		PredictionResult<T> result = classes.keySet().stream().map(target -> pcx.apply(target).apply(factTerms))
 				.reduce(IDENTITY, (a, b) -> chooseMax(a, b));
 
 		return result;
@@ -97,7 +97,7 @@ public class NaiveBaeys<T> implements Classifier<T> {
 		return newTermsVector;
 	}
 
-	LikelihoodResult<T> chooseMax(LikelihoodResult<T> a, LikelihoodResult<T> b) {
+	PredictionResult<T> chooseMax(PredictionResult<T> a, PredictionResult<T> b) {
 
 		if (b.probability() >= a.probability()) {
 			return b;
@@ -176,9 +176,9 @@ public class NaiveBaeys<T> implements Classifier<T> {
 
 	};
 
-	Function<Target<T>, Function<TermsVector, LikelihoodResult<T>>> pcx = target -> termsVector -> {
+	Function<Target<T>, Function<TermsVector, PredictionResult<T>>> pcx = target -> termsVector -> {
 		var probability = (numenator.apply(target).apply(termsVector) * 1.d) / denominator.apply(termsVector);
 
-		return new LikelihoodResult<T>(target, probability);
+		return new PredictionResult<T>(target, probability);
 	};
 }
