@@ -48,10 +48,8 @@ public class NaiveBaeys<T> implements Classifier<T> {
 		});
 	}
 
-	private void increaseTotalFacts() {
-		
-		totalFacts++;
-		
+	private void increaseTotalFacts() {	
+		totalFacts++;		
 	}
 	
 	public void collectFactStatistics(Fact<T> fact) {

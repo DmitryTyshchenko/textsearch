@@ -6,13 +6,13 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ztysdmy.textmining.classifier.Classifier;
-import ztysdmy.textmining.classifier.TanimotoDistance;
 import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.Target;
 import ztysdmy.textmining.repository.FactsRepository;
 import ztysdmy.textmining.repository.InMemoryFactsRepository;
 
 import ztysdmy.textmining.classifier.KNeighborEstimatorImpl.KNeighborEstimatorImplBuilder;
+import ztysdmy.textmining.functions.TanimotoDistance;
 
 public class KNeighborEstimatorImplTest {
 

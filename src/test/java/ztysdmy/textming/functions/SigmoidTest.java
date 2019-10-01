@@ -1,7 +1,9 @@
-package ztysdmy.textmining.classifier;
+package ztysdmy.textming.functions;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import ztysdmy.textmining.functions.Sigmoid;
 
 public class SigmoidTest {
 

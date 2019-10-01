@@ -1,4 +1,4 @@
-package ztysdmy.textmining.classifier;
+package ztysdmy.textmining.functions;
 
 import java.util.function.Function;
 

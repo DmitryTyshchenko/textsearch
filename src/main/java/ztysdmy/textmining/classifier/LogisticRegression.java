@@ -1,0 +1,57 @@
+package ztysdmy.textmining.classifier;
+
+import java.util.HashMap;
+
+import ztysdmy.textmining.functions.Sigmoid;
+import ztysdmy.textmining.model.Fact;
+import ztysdmy.textmining.model.LikelihoodResult;
+import ztysdmy.textmining.model.Target;
+import ztysdmy.textmining.model.Term;
+import ztysdmy.textmining.model.TermsVectorBuilder;
+
+public class LogisticRegression<T> implements Classifier<T> {
+
+	private Monomial IDENTITY = new Monomial();
+
+	private HashMap<Term, Monomial> POLYNOMIAL = new HashMap<>();
+
+	private final Target<T> target;
+
+	public LogisticRegression(Target<T> category) {
+		this.target = category;
+	}
+
+	@Override
+	public LikelihoodResult<T> likelihood(Fact<T> fact) {
+		var terms = TermsVectorBuilder.build(fact, 1);
+		var result = terms.terms().stream().map(t -> monomial(t)).mapToDouble(m -> m.weight).reduce(IDENTITY.weight,
+				(a, b) -> a + b);
+		result = applySigmoid(result);
+		return new LikelihoodResult<T>(target, result);
+	}
+
+	double applySigmoid(double d) {
+		Sigmoid sigmoid = new Sigmoid();
+		var result = sigmoid.apply(d);
+		return result;
+	}
+
+	private Monomial monomial(Term term) {
+		Monomial defaultMonomial = new Monomial();
+		var monomial = this.POLYNOMIAL.getOrDefault(term, defaultMonomial);
+		return monomial;
+	}
+
+	static class Monomial {
+
+		double weight;
+
+		void updateWeight(double weight) {
+			this.weight = weight;
+		}
+
+		double weight() {
+			return this.weight;
+		}
+	}
+}
