@@ -1,6 +1,5 @@
 package ztysdmy.textmining.learning;
 
-import ztysdmy.textmining.classifier.Classifier;
 import ztysdmy.textmining.classifier.NaiveBaeys;
 import ztysdmy.textmining.repository.FactsRepository;
 
@@ -21,7 +20,7 @@ public class NaiveBayesLearningMachine<T> implements Supervized<T> {
 	}
 	
 	@Override
-	public Classifier<T> build() {
+	public NaiveBaeys<T> build() {
 		
 		var result = new NaiveBaeys<T>(this.complexity);
 		
