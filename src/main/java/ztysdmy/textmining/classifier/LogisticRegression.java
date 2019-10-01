@@ -52,15 +52,15 @@ public class LogisticRegression<T> implements Classifier<T> {
 		return monomial;
 	}
 
-	static class Monomial {
+	public static class Monomial {
 
 		double weight;
 
-		void updateWeight(double weight) {
+		public void updateWeight(double weight) {
 			this.weight = weight;
 		}
 
-		double weight() {
+		public double weight() {
 			return this.weight;
 		}
 	}
