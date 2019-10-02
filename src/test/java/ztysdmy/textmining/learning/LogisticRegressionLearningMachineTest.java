@@ -10,16 +10,16 @@ import ztysdmy.textmining.model.Binomial;
 import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.PredictionResult;
 import ztysdmy.textmining.model.Target;
+import static ztysdmy.textmining.learning.LogisticRegressionLearningMachine.*;
 
 public class LogisticRegressionLearningMachineTest {
 
 	@Test
 	public void shouldCalculateError() throws Exception {
-		var logRegression = new LogisticRegressionLearningMachine();
 		var target = new Target<Binomial>(Binomial.YES);
 		var fact = new Fact<Binomial>("abc", target);
 		var predictionResult = new PredictionResult<Binomial>(target, 0.7d);
-		Assert.assertEquals(0.3, round(logRegression.error(fact, predictionResult)), 0.d);
+		Assert.assertEquals(0.3, round(error(fact, predictionResult)), 0.d);
 	}
 
 	private double round(double value) {
