@@ -31,8 +31,18 @@ public class LogisticRegression implements Classifier<Binomial> {
 		return new PredictionResult<Binomial>(target, result);
 	}
 
+	public void putTermToPolynomIfAbsent(Term term) {
+		this.POLYNOMIAL.putIfAbsent(term, monomialWithRandomWeight());
+	}
+	
+	Monomial monomialWithRandomWeight() {
+		var result = new Monomial();
+		result.updateWeight(Math.random());
+		return result;
+	}
+	
 	Function<TermsVector, Double> sumOfMonomials = t -> sumOfMonomials(t);
-
+	
 	private double sumOfMonomials(TermsVector terms) {
 		var result = terms.terms().stream().map(t -> monomial(t)).mapToDouble(m -> m.weight).reduce(IDENTITY.weight,
 				(a, b) -> a + b);

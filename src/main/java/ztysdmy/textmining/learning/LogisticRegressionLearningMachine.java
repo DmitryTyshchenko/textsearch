@@ -29,6 +29,7 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 		return null;
 	}
 
+	
 	static double error(Fact<Binomial> fact, PredictionResult<Binomial> prediction) {
 		var target = target(fact);
 		var result = (target.value().value() - prediction.probability());
