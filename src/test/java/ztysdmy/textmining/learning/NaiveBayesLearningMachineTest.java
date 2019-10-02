@@ -1,9 +1,6 @@
 package ztysdmy.textmining.learning;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -48,19 +45,6 @@ public class NaiveBayesLearningMachineTest {
 			return toTarget.apply("classA");
 		}
 		return toTarget.apply("classB");
-	};
-
-	private Supplier<Collection<Fact<String>>> factsSupplier = () -> {
-
-		ArrayList<Fact<String>> result = new ArrayList<>();
-
-		for (int i = 0; i < 4; i++) {
-			var target = chooseTarger.apply(i);
-			var fact = new Fact<String>("test", target);
-			result.add(fact);
-		}
-
-		return result;
 	};
 
 }
