@@ -29,6 +29,10 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 		return null;
 	}
 
+	LogisticRegression createLogisticRegression() {
+		var result = new LogisticRegression();
+		return result;
+	}
 	
 	static double error(Fact<Binomial> fact, PredictionResult<Binomial> prediction) {
 		var target = target(fact);
@@ -62,4 +66,6 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 		private double alpha = 0.001d;
 
 	}
+	
+	
 }

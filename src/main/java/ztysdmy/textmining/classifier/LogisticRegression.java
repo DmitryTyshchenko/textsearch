@@ -17,18 +17,12 @@ public class LogisticRegression implements Classifier<Binomial> {
 	Monomial IDENTITY = new Monomial();
 
 	HashMap<Term, Monomial> POLYNOMIAL = new HashMap<>();
-
-	private final Target<Binomial> target;
-
-	public LogisticRegression(Target<Binomial> category) {
-		this.target = category;
-	}
-
+	
 	@Override
-	public PredictionResult<Binomial> predict(Fact<Binomial> fact) {
+	public LogisticRegressionPredictionResult predict(Fact<Binomial> fact) {
 		var terms = TermsVectorBuilder.build(fact, 1);
 		var result = sumOfMonomials.andThen(applySigmoid).apply(terms);
-		return new PredictionResult<Binomial>(target, result);
+		return new LogisticRegressionPredictionResult(result);
 	}
 
 	public void putTermToPolynomIfAbsent(Term term) {
@@ -76,5 +70,13 @@ public class LogisticRegression implements Classifier<Binomial> {
 		}
 	}
 
+	public static class LogisticRegressionPredictionResult extends PredictionResult<Binomial> {
+
+		private static final Target<Binomial> target = new Target<Binomial>(Binomial.YES);
+		
+		public LogisticRegressionPredictionResult(Double probability) {
+			super(target, probability);
+		}
+	}
 	
 }
