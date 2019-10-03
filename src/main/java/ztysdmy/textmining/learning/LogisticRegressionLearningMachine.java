@@ -1,6 +1,6 @@
 package ztysdmy.textmining.learning;
 
-import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
 
 import ztysdmy.textmining.classifier.LogisticRegression;
 import ztysdmy.textmining.model.Binomial;
@@ -27,24 +27,21 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 		this.params = params;
 	}
 
-	BiFunction<Fact<?>, LogisticRegression, LogisticRegression> monomialsFromFact = (fact, logisticRegression) -> {
+	BiConsumer<Fact<?>, LogisticRegression> monomialsFromFact = (fact, logisticRegression) -> {
 		var terms = TermsVectorBuilder.build(fact, 1);
 		collectMonomials(logisticRegression, terms);
-		return logisticRegression;
 	};
 
-	LogisticRegression collectMonomials(LogisticRegression logisticRegression) {
+	void collectMonomials(LogisticRegression logisticRegression) {
 
-		return withEachFact(monomialsFromFact, logisticRegression);
+		withEachFact(monomialsFromFact, logisticRegression);
 	}
 
-	LogisticRegression withEachFact(BiFunction<Fact<?>, LogisticRegression, LogisticRegression> function,
-			LogisticRegression logisticRegression) {
+	void withEachFact(BiConsumer<Fact<?>, LogisticRegression> function, LogisticRegression logisticRegression) {
 
 		factsRepository.stream().forEach(fact -> {
-			function.apply(fact, logisticRegression);
+			function.accept(fact, logisticRegression);
 		});
-		return logisticRegression;
 	}
 
 	private void collectMonomials(LogisticRegression logisticRegression, TermsVector terms) {
@@ -95,5 +92,4 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 		private double alpha = 0.001d;
 
 	}
-
 }

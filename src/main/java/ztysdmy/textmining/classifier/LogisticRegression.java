@@ -51,7 +51,7 @@ public class LogisticRegression implements Classifier<Binomial> {
 		return result;
 	}
 
-	private Monomial monomial(Term term) {
+	public Monomial monomial(Term term) {
 		Monomial defaultMonomial = new Monomial();
 		var monomial = this.POLYNOMIAL.getOrDefault(term, defaultMonomial);
 		return monomial;
