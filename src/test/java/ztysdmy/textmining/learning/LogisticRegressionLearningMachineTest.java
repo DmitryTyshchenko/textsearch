@@ -27,4 +27,10 @@ public class LogisticRegressionLearningMachineTest {
 		bd = bd.setScale(3, RoundingMode.HALF_UP);
 		return bd.doubleValue();
 	}
+	
+	private Fact<Binomial> fact(String value, Binomial targetValue) {
+		var fact = new Fact<Binomial>(value, new Target<Binomial>(targetValue));
+
+		return fact;
+	}
 }

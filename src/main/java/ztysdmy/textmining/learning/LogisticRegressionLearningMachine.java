@@ -1,10 +1,14 @@
 package ztysdmy.textmining.learning;
 
+import java.util.function.BiFunction;
+
 import ztysdmy.textmining.classifier.LogisticRegression;
 import ztysdmy.textmining.model.Binomial;
 import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.PredictionResult;
 import ztysdmy.textmining.model.Target;
+import ztysdmy.textmining.model.TermsVector;
+import ztysdmy.textmining.model.TermsVectorBuilder;
 import ztysdmy.textmining.repository.FactsRepository;
 
 public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
@@ -23,6 +27,31 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 		this.params = params;
 	}
 
+	BiFunction<Fact<?>, LogisticRegression, LogisticRegression> monomialsFromFact = (fact, logisticRegression) -> {
+		var terms = TermsVectorBuilder.build(fact, 1);
+		collectMonomials(logisticRegression, terms);
+		return logisticRegression;
+	};
+
+	LogisticRegression collectMonomials(LogisticRegression logisticRegression) {
+
+		return withEachFact(monomialsFromFact, logisticRegression);
+	}
+
+	LogisticRegression withEachFact(BiFunction<Fact<?>, LogisticRegression, LogisticRegression> function,
+			LogisticRegression logisticRegression) {
+
+		factsRepository.stream().forEach(fact -> {
+			function.apply(fact, logisticRegression);
+		});
+		return logisticRegression;
+	}
+
+	private void collectMonomials(LogisticRegression logisticRegression, TermsVector terms) {
+
+		terms.terms().forEach(term -> logisticRegression.putTermToPolynomIfAbsent(term));
+	}
+
 	@Override
 	public LogisticRegression build() {
 		// TODO Auto-generated method stub
@@ -33,7 +62,7 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 		var result = new LogisticRegression();
 		return result;
 	}
-	
+
 	static double error(Fact<Binomial> fact, PredictionResult<Binomial> prediction) {
 		var target = target(fact);
 		var result = (target.value().value() - prediction.probability());
@@ -66,6 +95,5 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 		private double alpha = 0.001d;
 
 	}
-	
-	
+
 }
