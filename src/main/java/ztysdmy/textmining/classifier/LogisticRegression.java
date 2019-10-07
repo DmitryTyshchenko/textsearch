@@ -29,9 +29,15 @@ public class LogisticRegression implements Classifier<Binomial> {
 		this.POLYNOMIAL.putIfAbsent(term, monomialWithRandomWeight());
 	}
 	
+	public Monomial identity() {
+		return IDENTITY;
+	}
+	
+	//TODO: should initial weights be random?
 	Monomial monomialWithRandomWeight() {
 		var result = new Monomial();
-		result.updateWeight(Math.random());
+		//result.updateWeight(Math.random());
+		//result.updateWeight(0.0001d);
 		return result;
 	}
 	
@@ -59,7 +65,7 @@ public class LogisticRegression implements Classifier<Binomial> {
 
 	public static class Monomial {
 
-		double weight;
+		double weight = 0.d;
 
 		public void updateWeight(double weight) {
 			this.weight = weight;
@@ -79,4 +85,24 @@ public class LogisticRegression implements Classifier<Binomial> {
 		}
 	}
 	
+	@Override
+	public String toString() {
+		
+		StringBuilder stringBuilder = new StringBuilder();
+		
+		stringBuilder.append(this.IDENTITY.weight());
+		
+		this.POLYNOMIAL.forEach((term, monomial)->{
+			stringBuilder.append("+");
+			stringBuilder.append(Double.toString(monomial.weight()));
+			stringBuilder.append("*");
+			stringBuilder.append(term.value());
+		});
+		
+		return stringBuilder.toString();
+	}
+	
+	public void logToConsole() {
+		System.out.println(this.toString());
+	}
 }

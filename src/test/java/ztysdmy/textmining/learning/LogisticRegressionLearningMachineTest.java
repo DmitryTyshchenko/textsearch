@@ -52,6 +52,22 @@ public class LogisticRegressionLearningMachineTest {
 
 	}
 
+	
+	@Test
+	public void sanityTest() throws Exception {
+
+		var learningMachine = new LogisticRegressionLearningMachine(factsRepository());
+
+		var logisticRegression = learningMachine.build();
+		System.out.println(logisticRegression.toString());
+		var result = logisticRegression.predict(new Fact<Binomial>("a"));
+		System.out.println(result.probability()>0.5);
+		
+		var result2 = logisticRegression.predict(new Fact<Binomial>("b"));
+		System.out.println(result2.probability()>0.5d);
+		
+	}
+	
 	FactsRepository<Binomial> factsRepository() {
 
 		FactsRepository<Binomial> result = new InMemoryFactsRepository<>();
@@ -63,12 +79,16 @@ public class LogisticRegressionLearningMachineTest {
 
 		var result = new ArrayList<Fact<Binomial>>();
 
+		
 		var trueFact = fact("a", Binomial.YES);
 		result.add(trueFact);
-
+		
+		
+		//for (int i=0;i<300;i++) {
+			
 		var falseFact = fact("b", Binomial.NO);
-		result.add(falseFact);
-
+	//	result.add(falseFact);
+		//}
 		return result;
 	}
 

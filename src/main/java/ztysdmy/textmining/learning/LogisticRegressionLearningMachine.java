@@ -1,12 +1,16 @@
 package ztysdmy.textmining.learning;
 
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import ztysdmy.textmining.classifier.LogisticRegression;
+import ztysdmy.textmining.classifier.LogisticRegression.Monomial;
 import ztysdmy.textmining.model.Binomial;
 import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.PredictionResult;
 import ztysdmy.textmining.model.Target;
+import ztysdmy.textmining.model.Term;
 import ztysdmy.textmining.model.TermsVector;
 import ztysdmy.textmining.model.TermsVectorBuilder;
 import ztysdmy.textmining.repository.FactsRepository;
@@ -27,7 +31,7 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 		this.params = params;
 	}
 
-	BiConsumer<Fact<?>, LogisticRegression> monomialsFromFact = (fact, logisticRegression) -> {
+	BiConsumer<Fact<Binomial>, LogisticRegression> monomialsFromFact = (fact, logisticRegression) -> {
 		var terms = TermsVectorBuilder.build(fact, 1);
 		collectMonomials(logisticRegression, terms);
 	};
@@ -37,10 +41,55 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 		withEachFact(monomialsFromFact, logisticRegression);
 	}
 
-	void withEachFact(BiConsumer<Fact<?>, LogisticRegression> function, LogisticRegression logisticRegression) {
+	void learn(LogisticRegression logisticRegression) {
+		whileStopCriteriaHasNotReached(() -> withEachFact(learnFromFact, logisticRegression));
+	}
+	
+	private void whileStopCriteriaHasNotReached(LearningAction action) {
 
+		for (int i = 0; i < params.getEpoches(); i++) {
+
+			action.run();
+		}
+	}
+
+	CalculateError calculateError = (fact, logisticRegression) -> error(fact,
+			logisticRegression.predict(fact));
+
+	UpdateRegressionWeights updateRegressionWeights = error -> {
+
+		return (fact, logisticRegression) -> {
+			updateMonomialWeight(logisticRegression.identity(), error);
+			var terms = TermsVectorBuilder.build(fact, 1);
+			terms.terms().forEach(term -> {
+				updateMonomialWeight(term, error, logisticRegression);
+			});
+		};
+	};
+
+	LearnFromFact learnFromFact = (fact, logisticRegression) -> {
+
+		calculateError.andThen(updateRegressionWeights).apply(fact, logisticRegression).accept(fact,
+				logisticRegression);
+
+	};
+
+	private void updateMonomialWeight(Monomial monomial, double error) {
+		var v = error * params.getLearningRate();
+		var newWeight = monomial.weight() - v;
+		monomial.updateWeight(newWeight);
+	}
+
+	private void updateMonomialWeight(Term term, double error, LogisticRegression logisticRegression) {
+		var monomial = logisticRegression.monomial(term);
+		updateMonomialWeight(monomial, error);
+	}
+
+	void withEachFact(BiConsumer<Fact<Binomial>, LogisticRegression> consumer, LogisticRegression logisticRegression) {
+
+		logisticRegression.logToConsole();
 		factsRepository.stream().forEach(fact -> {
-			function.accept(fact, logisticRegression);
+			consumer.accept(fact, logisticRegression);
 		});
 	}
 
@@ -51,8 +100,10 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 
 	@Override
 	public LogisticRegression build() {
-		// TODO Auto-generated method stub
-		return null;
+		var logisticRegression = createLogisticRegression();
+		collectMonomials(logisticRegression);
+		learn(logisticRegression);
+		return logisticRegression;
 	}
 
 	LogisticRegression createLogisticRegression() {
@@ -63,6 +114,7 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 	static double error(Fact<Binomial> fact, PredictionResult<Binomial> prediction) {
 		var target = target(fact);
 		var result = (target.value().value() - prediction.probability());
+		result = Math.abs(result);
 		return result;
 	}
 
@@ -80,16 +132,36 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 			this.epoches = epoches;
 		}
 
-		public double getAlpha() {
-			return alpha;
+		public double getLearningRate() {
+			return learningRate;
 		}
 
-		public void setAlpha(double alpha) {
-			this.alpha = alpha;
+		public void setLearningRate(double alpha) {
+			this.learningRate = alpha;
 		}
 
-		private int epoches = 10000;
-		private double alpha = 0.001d;
+		private int epoches = 100000;
+		private double learningRate = 0.01d;
 
+	}
+	
+	@FunctionalInterface
+	static interface LearningAction extends Runnable {
+
+	}
+
+	@FunctionalInterface
+	static interface CalculateError extends BiFunction<Fact<Binomial>, LogisticRegression, Double> {
+		
+	}
+	
+	@FunctionalInterface
+	static interface UpdateRegressionWeights extends Function<Double, BiConsumer<Fact<Binomial>, LogisticRegression>> {
+		
+	}
+	
+	@FunctionalInterface
+	static interface LearnFromFact extends BiConsumer<Fact<Binomial>, LogisticRegression> {
+		
 	}
 }
