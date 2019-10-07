@@ -52,22 +52,24 @@ public class LogisticRegressionLearningMachineTest {
 
 	}
 
-	
 	@Test
 	public void sanityTest() throws Exception {
 
 		var learningMachine = new LogisticRegressionLearningMachine(factsRepository());
 
 		var logisticRegression = learningMachine.build();
-		System.out.println(logisticRegression.toString());
+		//System.out.println(logisticRegression.toString());
 		var result = logisticRegression.predict(new Fact<Binomial>("a"));
-		System.out.println(result.probability()>0.5);
+		Assert.assertTrue(result.probability() > 0.5);
 		
 		var result2 = logisticRegression.predict(new Fact<Binomial>("b"));
-		System.out.println(result2.probability()>0.5d);
-		
+		Assert.assertFalse(result2.probability() > 0.5d);
+
+		var result3 = logisticRegression.predict(new Fact<Binomial>("c"));
+		Assert.assertTrue(result3.probability() > 0.5d);
+
 	}
-	
+
 	FactsRepository<Binomial> factsRepository() {
 
 		FactsRepository<Binomial> result = new InMemoryFactsRepository<>();
@@ -79,19 +81,64 @@ public class LogisticRegressionLearningMachineTest {
 
 		var result = new ArrayList<Fact<Binomial>>();
 
+		for (int i = 0; i < 4; ++i) {
+			var trueFact = fact("a", Binomial.YES);
+			result.add(trueFact);
+		}
 		
-		var trueFact = fact("a", Binomial.YES);
-		result.add(trueFact);
+		var trueFact2 = fact("c", Binomial.YES);
+		result.add(trueFact2);
+
 		
-		
-		//for (int i=0;i<300;i++) {
-			
 		var falseFact = fact("b", Binomial.NO);
-	//	result.add(falseFact);
-		//}
+		result.add(falseFact);
 		return result;
 	}
 
+	//from https://www.sports.ru/barcelona/news/page2/
+	Collection<Fact<Binomial>> barcelonaFacts() {
+		
+		var result = new ArrayList<Fact<Binomial>>();
+		
+		var trueFact1 = fact("Главный тренер «Барселоны» Эрнесто Вальверде высказался в преддверии матча 8-го тура Ла Лиги с «Севильей»." + 
+				 
+				"«Месси и Суарес снова в хорошей форме. Они продемонстрировали это в матче с «Интером» (2:1)." + 
+				 
+				"В воскресенье я приму решение, начнут ли они матч с первых минут или выйдут на поле позже. Оба игрока в этом сезоне столкнулись с травмами, но чем больше они будут играть, тем лучше будет их форма." + 
+				 
+				"У нас все отлично. Мы на хорошем ходу, сейчас нам предстоит матч с сильной командой. Наша цель – продолжать двигаться вперед», – сказал Вальверде. ", Binomial.YES);
+		
+		result.add(trueFact1);
+		
+		
+		var falseFact = fact("Полузащитник Усман Дембеле сегодня тренировался с «Барселоной»." + 
+				 
+				"Француз вернулся к занятиям раньше предполагаемого срока. Однако он занимался в общей группе лишь частично." + 
+				 
+				"Дембеле пропустил около месяца из-за травмы двуглавой мышцы левого бедра.", Binomial.NO);
+		
+		result.add(falseFact);
+		
+		return result;
+	}
+	
+	@Test
+	public void barcelonaTest() throws Exception {
+		
+		FactsRepository<Binomial> repository = new InMemoryFactsRepository<>();
+		repository.add(barcelonaFacts());
+		
+		var learningMachine = new LogisticRegressionLearningMachine(repository);
+
+		var logisticRegression = learningMachine.build();
+		System.out.println(logisticRegression.toString());
+		var result = logisticRegression.predict(new Fact<Binomial>("Месси и Суарес снова в хорошей форме"));
+		
+		System.out.println("Barcelona is win "+(result.probability()>0.5d));
+		System.out.println("Probability that Barcelona win is "+result.probability());
+		
+	}
+	
 	private Fact<Binomial> fact(String value, Binomial targetValue) {
 		var fact = new Fact<Binomial>(value, new Target<Binomial>(targetValue));
 

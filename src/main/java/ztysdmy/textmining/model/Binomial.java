@@ -13,4 +13,5 @@ public enum Binomial {
 	public double value() {
 		return value;
 	}
+
 }

@@ -15,6 +15,12 @@ import ztysdmy.textmining.model.TermsVector;
 import ztysdmy.textmining.model.TermsVectorBuilder;
 import ztysdmy.textmining.repository.FactsRepository;
 
+/**
+ * http://rasbt.github.io/mlxtend/user_guide/classifier/LogisticRegression/
+ * @author dmytro.tyshchenko
+ *
+ */
+
 public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 
 	private FactsRepository<Binomial> factsRepository;
@@ -60,7 +66,7 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 
 		return (fact, logisticRegression) -> {
 			updateMonomialWeight(logisticRegression.identity(), error);
-			var terms = TermsVectorBuilder.build(fact, 1);
+			var terms = TermsVectorBuilder.build(fact, 0);
 			terms.terms().forEach(term -> {
 				updateMonomialWeight(term, error, logisticRegression);
 			});
@@ -68,15 +74,13 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 	};
 
 	LearnFromFact learnFromFact = (fact, logisticRegression) -> {
-
 		calculateError.andThen(updateRegressionWeights).apply(fact, logisticRegression).accept(fact,
 				logisticRegression);
-
 	};
 
 	private void updateMonomialWeight(Monomial monomial, double error) {
 		var v = error * params.getLearningRate();
-		var newWeight = monomial.weight() - v;
+		var newWeight = monomial.weight() + v;
 		monomial.updateWeight(newWeight);
 	}
 
@@ -87,7 +91,6 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 
 	void withEachFact(BiConsumer<Fact<Binomial>, LogisticRegression> consumer, LogisticRegression logisticRegression) {
 
-		logisticRegression.logToConsole();
 		factsRepository.stream().forEach(fact -> {
 			consumer.accept(fact, logisticRegression);
 		});
@@ -114,7 +117,6 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 	static double error(Fact<Binomial> fact, PredictionResult<Binomial> prediction) {
 		var target = target(fact);
 		var result = (target.value().value() - prediction.probability());
-		result = Math.abs(result);
 		return result;
 	}
 
@@ -140,8 +142,8 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 			this.learningRate = alpha;
 		}
 
-		private int epoches = 100000;
-		private double learningRate = 0.01d;
+		private int epoches = 10000;
+		private double learningRate = 0.001d;
 
 	}
 	

@@ -14,30 +14,28 @@ import ztysdmy.textmining.model.TermsVectorBuilder;
 
 public class LogisticRegression implements Classifier<Binomial> {
 
-	Monomial IDENTITY = monomialWithRandomWeight();
+	Monomial IDENTITY = initialMonomialWeight();
 
 	HashMap<Term, Monomial> POLYNOMIAL = new HashMap<>();
 	
 	@Override
 	public LogisticRegressionPredictionResult predict(Fact<Binomial> fact) {
-		var terms = TermsVectorBuilder.build(fact, 1);
+		var terms = TermsVectorBuilder.build(fact, 0);
 		var result = sumOfMonomials.andThen(applySigmoid).apply(terms);
 		return new LogisticRegressionPredictionResult(result);
 	}
 
 	public void putTermToPolynomIfAbsent(Term term) {
-		this.POLYNOMIAL.putIfAbsent(term, monomialWithRandomWeight());
+		this.POLYNOMIAL.putIfAbsent(term, initialMonomialWeight());
 	}
 	
 	public Monomial identity() {
 		return IDENTITY;
 	}
 	
-	//TODO: should initial weights be random?
-	Monomial monomialWithRandomWeight() {
+	Monomial initialMonomialWeight() {
 		var result = new Monomial();
-		//result.updateWeight(Math.random());
-		//result.updateWeight(0.0001d);
+		result.updateWeight(Math.random());
 		return result;
 	}
 	
@@ -102,7 +100,4 @@ public class LogisticRegression implements Classifier<Binomial> {
 		return stringBuilder.toString();
 	}
 	
-	public void logToConsole() {
-		System.out.println(this.toString());
-	}
 }
