@@ -1,6 +1,7 @@
 package ztysdmy.textmining.classifier;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.function.Function;
 
 import ztysdmy.textmining.functions.Sigmoid;
@@ -12,20 +13,29 @@ import ztysdmy.textmining.model.Term;
 import ztysdmy.textmining.model.TermsVector;
 import ztysdmy.textmining.model.TermsVectorBuilder;
 
-public class LogisticRegression implements Classifier<Binomial> {
+public class LogisticRegression extends AbstractClassifier<Binomial> {
 
+	public LogisticRegression(int complexity) {
+		super(complexity);
+	}
+
+	public LogisticRegression() {
+		super(0);
+	}
+	
 	Monomial IDENTITY = initialMonomialWeight();
 
 	HashMap<Term, Monomial> POLYNOMIAL = new HashMap<>();
 	
 	@Override
 	public LogisticRegressionPredictionResult predict(Fact<Binomial> fact) {
-		var terms = TermsVectorBuilder.build(fact, 0);
-		var result = sumOfMonomials.andThen(applySigmoid).apply(terms);
+		var result = monomialsFromFact.andThen(sumOfMonomials.andThen(applySigmoid)).apply(fact);
 		return new LogisticRegressionPredictionResult(result);
 	}
 
-	public void putTermToPolynomIfAbsent(Term term) {
+	Function<Fact<Binomial>, TermsVector> monomialsFromFact = fact->TermsVectorBuilder.build(fact, this.getComplexity());
+	
+	public void addTermToPolynomIfAbsent(Term term) {
 		this.POLYNOMIAL.putIfAbsent(term, initialMonomialWeight());
 	}
 	
@@ -56,9 +66,7 @@ public class LogisticRegression implements Classifier<Binomial> {
 	}
 
 	public Monomial monomial(Term term) {
-		Monomial defaultMonomial = new Monomial();
-		var monomial = this.POLYNOMIAL.getOrDefault(term, defaultMonomial);
-		return monomial;
+		return Optional.ofNullable(this.POLYNOMIAL.get(term)).orElseGet(()->new Monomial());
 	}
 
 	public static class Monomial {

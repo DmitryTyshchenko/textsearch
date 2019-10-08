@@ -5,11 +5,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import ztysdmy.textmining.classifier.LogisticRegression;
-import ztysdmy.textmining.classifier.LogisticRegression.Monomial;
 import ztysdmy.textmining.model.Binomial;
 import ztysdmy.textmining.model.Fact;
-import ztysdmy.textmining.model.PredictionResult;
-import ztysdmy.textmining.model.Target;
 import ztysdmy.textmining.model.Term;
 import ztysdmy.textmining.model.TermsVector;
 import ztysdmy.textmining.model.TermsVectorBuilder;
@@ -17,6 +14,7 @@ import ztysdmy.textmining.repository.FactsRepository;
 
 /**
  * http://rasbt.github.io/mlxtend/user_guide/classifier/LogisticRegression/
+ * 
  * @author dmytro.tyshchenko
  *
  */
@@ -37,8 +35,10 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 		this.params = params;
 	}
 
+	Function<Fact<Binomial>, TermsVector> generateTermsFromFact = fact->TermsVectorBuilder.build(fact, this.params.getComplexity());
+	
 	BiConsumer<Fact<Binomial>, LogisticRegression> monomialsFromFact = (fact, logisticRegression) -> {
-		var terms = TermsVectorBuilder.build(fact, 1);
+		var terms = generateTermsFromFact.apply(fact);
 		collectMonomials(logisticRegression, terms);
 	};
 
@@ -50,7 +50,7 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 	void learn(LogisticRegression logisticRegression) {
 		whileStopCriteriaHasNotReached(() -> withEachFact(learnFromFact, logisticRegression));
 	}
-	
+
 	private void whileStopCriteriaHasNotReached(LearningAction action) {
 
 		for (int i = 0; i < params.getEpoches(); i++) {
@@ -59,34 +59,28 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 		}
 	}
 
-	CalculateError calculateError = (fact, logisticRegression) -> error(fact,
+	ErrorCalculator calculateError = (fact, logisticRegression) -> this.params.getCostFunction().error(fact,
 			logisticRegression.predict(fact));
 
-	UpdateRegressionWeights updateRegressionWeights = error -> {
+	RegressionWeightsUpdater updateRegressionWeights = error -> {
 
 		return (fact, logisticRegression) -> {
-			updateMonomialWeight(logisticRegression.identity(), error);
-			var terms = TermsVectorBuilder.build(fact, 0);
+			params.getCostFunction().updateWeight(logisticRegression.identity(), error, params.getLearningRate());
+			var terms = generateTermsFromFact.apply(fact);
 			terms.terms().forEach(term -> {
-				updateMonomialWeight(term, error, logisticRegression);
+				updateWeight(term, error, logisticRegression);
 			});
 		};
 	};
 
-	LearnFromFact learnFromFact = (fact, logisticRegression) -> {
+	LearnFromFactAction learnFromFact = (fact, logisticRegression) -> {
 		calculateError.andThen(updateRegressionWeights).apply(fact, logisticRegression).accept(fact,
 				logisticRegression);
 	};
 
-	private void updateMonomialWeight(Monomial monomial, double error) {
-		var v = error * params.getLearningRate();
-		var newWeight = monomial.weight() + v;
-		monomial.updateWeight(newWeight);
-	}
-
-	private void updateMonomialWeight(Term term, double error, LogisticRegression logisticRegression) {
+	private void updateWeight(Term term, double error, LogisticRegression logisticRegression) {
 		var monomial = logisticRegression.monomial(term);
-		updateMonomialWeight(monomial, error);
+		params.getCostFunction().updateWeight(monomial, error, params.getLearningRate());
 	}
 
 	void withEachFact(BiConsumer<Fact<Binomial>, LogisticRegression> consumer, LogisticRegression logisticRegression) {
@@ -98,7 +92,7 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 
 	private void collectMonomials(LogisticRegression logisticRegression, TermsVector terms) {
 
-		terms.terms().forEach(term -> logisticRegression.putTermToPolynomIfAbsent(term));
+		terms.terms().forEach(term -> logisticRegression.addTermToPolynomIfAbsent(term));
 	}
 
 	@Override
@@ -112,16 +106,6 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 	LogisticRegression createLogisticRegression() {
 		var result = new LogisticRegression();
 		return result;
-	}
-
-	static double error(Fact<Binomial> fact, PredictionResult<Binomial> prediction) {
-		var target = target(fact);
-		var result = (target.value().value() - prediction.probability());
-		return result;
-	}
-
-	static Target<Binomial> target(Fact<Binomial> fact) {
-		return fact.target().orElseThrow(() -> new RuntimeException("Fact without target"));
 	}
 
 	public static class LogisticRegressionParams {
@@ -145,25 +129,45 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 		private int epoches = 10000;
 		private double learningRate = 0.001d;
 
+		private CostFunction costFunction = new LogLikelihoodCostFunction();
+
+		public CostFunction getCostFunction() {
+			return costFunction;
+		}
+
+		public void setCostFunction(CostFunction costFunction) {
+			this.costFunction = costFunction;
+		}
+		
+		private int complexity = 0;
+		
+		public void setComplexity(int complexity) {
+			this.complexity = complexity;
+		}
+		
+		public int getComplexity() {
+			return this.complexity;
+		}
+
 	}
-	
+
 	@FunctionalInterface
 	static interface LearningAction extends Runnable {
 
 	}
 
 	@FunctionalInterface
-	static interface CalculateError extends BiFunction<Fact<Binomial>, LogisticRegression, Double> {
-		
+	static interface ErrorCalculator extends BiFunction<Fact<Binomial>, LogisticRegression, Double> {
+
 	}
-	
+
 	@FunctionalInterface
-	static interface UpdateRegressionWeights extends Function<Double, BiConsumer<Fact<Binomial>, LogisticRegression>> {
-		
+	static interface RegressionWeightsUpdater extends Function<Double, BiConsumer<Fact<Binomial>, LogisticRegression>> {
+
 	}
-	
+
 	@FunctionalInterface
-	static interface LearnFromFact extends BiConsumer<Fact<Binomial>, LogisticRegression> {
-		
+	static interface LearnFromFactAction extends BiConsumer<Fact<Binomial>, LogisticRegression> {
+
 	}
 }

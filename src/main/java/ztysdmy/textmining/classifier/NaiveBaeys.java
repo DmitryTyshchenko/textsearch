@@ -11,22 +11,21 @@ import ztysdmy.textmining.model.Term;
 import ztysdmy.textmining.model.TermsVector;
 import ztysdmy.textmining.model.TermsVectorBuilder;
 
-public class NaiveBaeys<T> implements Classifier<T> {
+public class NaiveBaeys<T> extends AbstractClassifier<T> {
 
 	HashMap<Term, TermStatistics> termsStatistics = new HashMap<>();
 
 	// keeps Target classes and their occurrences
 	HashMap<Target<T>, Integer> classes = new HashMap<>();
 
-	int complexity;
 	int totalFacts;
 
-	public NaiveBaeys() {
-		this(0);
-	}
-
 	public NaiveBaeys(int complexity) {
-		this.complexity = complexity;
+		super(complexity);
+	}
+	
+	public NaiveBaeys() {
+		super(0);
 	}
 
 	// used only in Tests; consider to remove it
@@ -56,7 +55,7 @@ public class NaiveBaeys<T> implements Classifier<T> {
 		increaseTotalFacts();
 		var target = fact.target().orElseThrow(() -> new RuntimeException("Fact without target"));
 		targetOccurrencies(target);
-		var terms = TermsVectorBuilder.build(fact, this.complexity);
+		var terms = TermsVectorBuilder.build(fact, this.getComplexity());
 		var consumer = computeTermStatistics.apply(target);
 		terms.terms().forEach(consumer);
 	}
@@ -75,7 +74,7 @@ public class NaiveBaeys<T> implements Classifier<T> {
 
 	@Override
 	public PredictionResult<T> predict(Fact<T> input) {
-		TermsVector factTerms = filterTermsWithoutStatistics(TermsVectorBuilder.build(input, this.complexity));
+		TermsVector factTerms = filterTermsWithoutStatistics(TermsVectorBuilder.build(input, this.getComplexity()));
 
 		PredictionResult<T> IDENTITY = new PredictionResult<>(null, 0.d);
 
