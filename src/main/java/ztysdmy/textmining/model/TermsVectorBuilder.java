@@ -27,12 +27,12 @@ public class TermsVectorBuilder {
 
 	private static void build(String textProvider, int complexity, TermsVector result) {
 
-		String words[] = splitStringToWords.andThen(filterEmptyWords).andThen(normilize).apply(textProvider);
+		String candidates[] = splitStringToWords.andThen(filterEmptyWords).andThen(normilize).apply(textProvider);
 
-		for (int i = 0; i < words.length; i++) {
-			var value = words[i];
+		for (int i = 0; i < candidates.length; i++) {
+			var value = candidates[i];
 			result.addTerm(value);
-			createComplexTerms(result, words, complexity, i);
+			createComplexTerms(result, candidates, complexity, i);
 		}
 
 	}
@@ -77,9 +77,9 @@ public class TermsVectorBuilder {
 	// TODO: consider to move it in different package
 	final static Function<String, String[]> splitStringToWords = value -> value.split("\\s");
 
-	final static Function<String[], String[]> filterEmptyWords = arrayOfStrings -> filterEmptyStrings(arrayOfStrings);
+	final static Function<String[], String[]> filterEmptyWords = arrayOfStrings -> filterEmptyWords(arrayOfStrings);
 
-	private static String[] filterEmptyStrings(String[] arrayOfStrings) {
+	private static String[] filterEmptyWords(String[] arrayOfStrings) {
 		List<String> list = Arrays.stream(arrayOfStrings).filter(x -> !x.equals("")).collect(Collectors.toList());
 		return list.toArray(new String[0]);
 	};
