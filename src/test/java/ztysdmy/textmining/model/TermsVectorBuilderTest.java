@@ -21,7 +21,7 @@ public class TermsVectorBuilderTest {
 	public void shuoldNormilizeText1() throws Exception {
 
 		String[] before = { "Test", "A" };
-		String[] after = TermsVectorBuilder.normilizer.apply(before);
+		String[] after = TermsVectorBuilder.normilize.apply(before);
 		String[] expected = { "test", "a" };
 		Assert.assertArrayEquals(expected, after);
 	}

@@ -27,12 +27,12 @@ public class TermsVectorBuilder {
 
 	private static void build(String textProvider, int complexity, TermsVector result) {
 
-		String candidates[] = splitSegmentValuesToWords.andThen(normilizer).apply(textProvider);
+		String words[] = splitStringToWords.andThen(filterEmptyWords).andThen(normilize).apply(textProvider);
 
-		for (int i = 0; i < candidates.length; i++) {
-			var value = candidates[i];
+		for (int i = 0; i < words.length; i++) {
+			var value = words[i];
 			result.addTerm(value);
-			createComplexTerms(result, candidates, complexity, i);
+			createComplexTerms(result, words, complexity, i);
 		}
 
 	}
@@ -75,7 +75,14 @@ public class TermsVectorBuilder {
 	}
 
 	// TODO: consider to move it in different package
-	final static Function<String, String[]> splitSegmentValuesToWords = value -> value.split("\\s");
+	final static Function<String, String[]> splitStringToWords = value -> value.split("\\s");
+
+	final static Function<String[], String[]> filterEmptyWords = arrayOfStrings -> filterEmptyStrings(arrayOfStrings);
+
+	private static String[] filterEmptyStrings(String[] arrayOfStrings) {
+		List<String> list = Arrays.stream(arrayOfStrings).filter(x -> !x.equals("")).collect(Collectors.toList());
+		return list.toArray(new String[0]);
+	};
 
 	final static Function<String, String> lowerCaseNormilizer = value -> value.toLowerCase();
 
@@ -92,19 +99,19 @@ public class TermsVectorBuilder {
 	static Function<String, String> removeLastCharacted = value -> removeLastCharacter(value);
 
 	static Function<Character, RemovalIsNeeded> checkIfRemovalIsNedeed = value -> {
-		
+
 		if (!PUNCTUATION_VALUES.contains(value)) {
-			
+
 			return RemovalIsNeeded.NO;
 		}
-		
+
 		return RemovalIsNeeded.YES;
 	};
 
 	final static Function<String, String> punctuationNormilizer = value -> {
 
 		RemovalIsNeeded removalIsNeeded = getLastCharacterFromString.andThen(checkIfRemovalIsNedeed).apply(value);
-		
+
 		return removalIsNeeded.nextOperation().apply(value);
 
 	};
@@ -129,8 +136,8 @@ public class TermsVectorBuilder {
 		return value.substring(0, (value.length() - 1));
 	}
 
-	final static Function<String[], String[]> normilizer = arrayOfStrings -> {
-		List<String> list = Arrays.stream(arrayOfStrings).filter(x -> !x.equals(""))
+	final static Function<String[], String[]> normilize = arrayOfStrings -> {
+		List<String> list = Arrays.stream(arrayOfStrings)
 				.map(lowerCaseNormilizer.andThen(punctuationNormilizer)).collect(Collectors.toList());
 		return list.toArray(new String[0]);
 	};
