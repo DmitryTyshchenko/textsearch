@@ -1,7 +1,10 @@
 package ztysdmy.textmining.model;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class TermsVectorBuilder {
 
@@ -79,26 +82,57 @@ public class TermsVectorBuilder {
 	// removes symbols like ',' ':' etc
 	private static final Set<Character> PUNCTUATION_VALUES = Set.of(',', '.', ':', '!', '?', ';');
 
+	static Function<String, Character> getLastCharacterFromString = value -> {
+		var lastCharacter = value.charAt((value.length() - 1));
+		return lastCharacter;
+	};
+
+	static Function<String, String> returnWithoutTransformation = value -> value;
+
+	static Function<String, String> removeLastCharacted = value -> removeLastCharacter(value);
+
+	static Function<Character, RemovalIsNeeded> checkIfRemovalIsNedeed = value -> {
+		
+		if (!PUNCTUATION_VALUES.contains(value)) {
+			
+			return RemovalIsNeeded.NO;
+		}
+		
+		return RemovalIsNeeded.YES;
+	};
+
 	final static Function<String, String> punctuationNormilizer = value -> {
 
-		char last_character = value.charAt((value.length() - 1));
+		RemovalIsNeeded removalIsNeeded = getLastCharacterFromString.andThen(checkIfRemovalIsNedeed).apply(value);
+		
+		return removalIsNeeded.nextOperation().apply(value);
 
-		if (!PUNCTUATION_VALUES.contains(last_character)) {
-
-			return value;
-		}
-		return removeLastCharacter(value);
 	};
+
+	// very quick implementation; need to think about generic cases
+	private static enum RemovalIsNeeded {
+
+		YES(removeLastCharacted), NO(returnWithoutTransformation);
+
+		RemovalIsNeeded(Function<String, String> nextOperation) {
+			this.nextOperation = nextOperation;
+		}
+
+		private Function<String, String> nextOperation;
+
+		public Function<String, String> nextOperation() {
+			return nextOperation;
+		}
+	}
 
 	private static String removeLastCharacter(String value) {
 		return value.substring(0, (value.length() - 1));
 	}
 
 	final static Function<String[], String[]> normilizer = arrayOfStrings -> {
-		for (int i = 0; i < arrayOfStrings.length; i++) {
-			arrayOfStrings[i] = lowerCaseNormilizer.andThen(punctuationNormilizer).apply(arrayOfStrings[i]);
-		}
-		return arrayOfStrings;
+		List<String> list = Arrays.stream(arrayOfStrings).filter(x -> !x.equals(""))
+				.map(lowerCaseNormilizer.andThen(punctuationNormilizer)).collect(Collectors.toList());
+		return list.toArray(new String[0]);
 	};
 
 }

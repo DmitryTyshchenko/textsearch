@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Function;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,6 +15,8 @@ import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.PredictionResult;
 import ztysdmy.textmining.model.Target;
 import ztysdmy.textmining.model.Term;
+import ztysdmy.textmining.model.TermsVector;
+import ztysdmy.textmining.model.TermsVectorBuilder;
 import ztysdmy.textmining.repository.FactsRepository;
 import ztysdmy.textmining.repository.InMemoryFactsRepository;
 
@@ -58,7 +61,7 @@ public class LogisticRegressionLearningMachineTest {
 		var learningMachine = new LogisticRegressionLearningMachine(factsRepository());
 
 		var logisticRegression = learningMachine.build();
-		//System.out.println(logisticRegression.toString());
+		System.out.println(logisticRegression.toString());
 		var result = logisticRegression.predict(new Fact<Binomial>("a"));
 		Assert.assertTrue(result.probability() > 0.5);
 		
@@ -131,7 +134,80 @@ public class LogisticRegressionLearningMachineTest {
 		return result;
 	}
 	
+	
+	Collection<Fact<Binomial>> javaFacts() {
+		var result = new ArrayList<Fact<Binomial>>();
+		
+		var falseFact1 = fact("public void startTimer()" + 
+				"        TimerService timerService = sessionContext.getTimerService();  " + 
+				"        Collection<Timer> timers = timerService.getTimers();  " + 
+				"        for (Timer timer : timers) {  " + 
+				"            if (EVENT_TIMER.equals(timer.getInfo())) {  " + 
+				"                try  " + 
+				"                {  " + 
+				"                    if (log.isDebugEnabled())  " + 
+				"                    {  " + 
+				"                        log.debug(\"Canceling timer \" + timer.getInfo());  " + 
+				"                    }  " + 
+				"                    timer.cancel();  " + 
+				"                }  " + 
+				"                catch (Exception e)  " + 
+				"                {  " + 
+				"                    // seems to be a bug where sometimes  " + 
+				"                    // NoSuchObjectLocalException is thrown  " + 
+				"                    // but timer is successfully canceled anyway  " + 
+				"                    log.warn(\"Ignoring caught exception: \"  " + 
+				"                            + e.getMessage());  " + 
+				"                }  " + 
+				"            }  " + 
+				"        }  " + 
+				"        Timer timer = timerService.createTimer(TIMER_START_INITIAL_DELAY, 15000L, EVENT_TIMER);  " + 
+				
+				"        List<Event> events = null;  " + 
+				"        try  " + 
+				"        {  " + 
+				"            events = getEvents();  " + 
+				"            getEventDistributor().initialize(events);  " + 
+				"        }  " + 
+				"        catch (Exception e)  " + 
+				"        {  " + 
+				"            log.error(\"Exception occured while loading event \" + events, e);  " + 
+				"        }  " + 
+				"    }", Binomial.NO);
+		
+		
+		var trueFact1 = fact ("public void publish(Event event)"+
+	    "{"+
+	        "Validate.notEmpty(event.getType(), \"Event type has to be provided.\");"+
+	        "event.setTimeUpdated(new Date());"+
+	        "saveEvent(event);"+
+	        "getEventDistributor().publish(event);"+
+	    "}", Binomial.YES);
+
+
+		result.add(trueFact1);
+		result.add(falseFact1);
+		return result;
+	}
+	
 	@Test
+	public void javaTest() throws Exception {
+
+		FactsRepository<Binomial> repository = new InMemoryFactsRepository<>();
+		repository.add(javaFacts());
+		
+		var learningMachine = new LogisticRegressionLearningMachine(repository);
+
+		var logisticRegression = learningMachine.build();
+		System.out.println(logisticRegression.toString());
+		var result = logisticRegression.predict(new Fact<Binomial>("Function<Fact<Binomial>, TermsVector> generateTermsFromFact = fact->TermsVectorBuilder.build(fact, this.params.getComplexity());"));
+		
+		System.out.println("Code is Good "+(result.probability()>0.5d));
+		System.out.println("Probability that code is good "+result.probability());
+
+	}
+	
+	//@Test
 	public void barcelonaTest() throws Exception {
 		
 		FactsRepository<Binomial> repository = new InMemoryFactsRepository<>();
