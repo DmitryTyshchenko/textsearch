@@ -33,4 +33,28 @@ public class TermsVectorBuilderTest {
 		Assert.assertEquals("test", result);
 	}
 	
+	@Test
+	public void shouldSplitStringToWords() throws Exception {
+		String[] result = TermsVectorBuilder.splitStringToWords.apply("sSome test, to spit string");
+		Assert.assertTrue(5==result.length);
+	}
+	
+	@Test
+	public void shouldFilterEmptyWords() throws Exception {
+		String[] test = {""};
+ 		String[] result = TermsVectorBuilder.filterEmptyWords.apply(test);
+ 		Assert.assertTrue(0==result.length);
+	}
+	
+	@Test
+	public void shouldIndicateThatRemovalOfLastCharIsNeeded() throws Exception {
+		var result = TermsVectorBuilder.checkIfRemovalIsNedeed.apply(',');
+		Assert.assertTrue(result.equals(TermsVectorBuilder.RemovalIsNeeded.YES));
+	}
+	
+	@Test
+	public void shouldReturnLastCharFromString() throws Exception {
+		var result = TermsVectorBuilder.getLastCharacterFromString.apply("test");
+		Assert.assertTrue(Character.valueOf('t').equals(result));
+	}
 }

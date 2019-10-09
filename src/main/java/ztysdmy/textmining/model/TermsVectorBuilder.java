@@ -46,7 +46,7 @@ public class TermsVectorBuilder {
 
 	/**
 	 * Creates complex Terms. For example for array ['a','b','c'] for word 'a' next
-	 * Terms will be created with complexity 3: 'a b', 'a b c'
+	 * Terms will be created with complexity 3: 'a', 'a b' and 'a b c'
 	 * 
 	 * @param result
 	 * @param candidates
@@ -117,7 +117,7 @@ public class TermsVectorBuilder {
 	};
 
 	// very quick implementation; need to think about generic cases
-	private static enum RemovalIsNeeded {
+	static enum RemovalIsNeeded {
 
 		YES(removeLastCharacted), NO(returnWithoutTransformation);
 
