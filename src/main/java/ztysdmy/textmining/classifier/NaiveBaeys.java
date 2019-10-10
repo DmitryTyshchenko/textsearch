@@ -1,6 +1,7 @@
 package ztysdmy.textmining.classifier;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -140,12 +141,8 @@ public class NaiveBaeys<T> extends AbstractClassifier<T> {
 
 	TermStatistics getOrCreateTermsStatistics(Term term) {
 
-		var result = this.termsStatistics.get(term);
+		return Optional.ofNullable(this.termsStatistics.get(term)).orElseGet(()->new TermStatistics());
 
-		if (result==null)
-			result = new TermStatistics();
-
-		return result;
 	}
 
 	Function<TermsVector, Double> denominator = tv -> {

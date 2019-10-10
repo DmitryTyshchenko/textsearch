@@ -35,6 +35,14 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 		this.params = params;
 	}
 
+	@Override
+	public LogisticRegression build() {
+		var logisticRegression = createLogisticRegression();
+		collectMonomials(logisticRegression);
+		learn(logisticRegression);
+		return logisticRegression;
+	}
+	
 	Function<Fact<Binomial>, TermsVector> generateTermsFromFact = fact->TermsVectorBuilder.build(fact, this.params.getComplexity());
 	
 	BiConsumer<Fact<Binomial>, LogisticRegression> monomialsFromFact = (fact, logisticRegression) -> {
@@ -51,7 +59,7 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 		whileStopCriteriaHasNotReached(() -> withEachFact(learnFromFact, logisticRegression));
 	}
 
-	private void whileStopCriteriaHasNotReached(LearningAction action) {
+	private void whileStopCriteriaHasNotReached(LearnFromFacts action) {
 
 		for (int i = 0; i < params.getEpoches(); i++) {
 
@@ -73,7 +81,7 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 		};
 	};
 
-	LearnFromFactAction learnFromFact = (fact, logisticRegression) -> {
+	LearnFromFact learnFromFact = (fact, logisticRegression) -> {
 		calculateError.andThen(updateRegressionWeights).apply(fact, logisticRegression).accept(fact,
 				logisticRegression);
 	};
@@ -93,14 +101,6 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 	private void collectMonomials(LogisticRegression logisticRegression, TermsVector terms) {
 
 		terms.terms().forEach(term -> logisticRegression.addTermToPolynomIfAbsent(term));
-	}
-
-	@Override
-	public LogisticRegression build() {
-		var logisticRegression = createLogisticRegression();
-		collectMonomials(logisticRegression);
-		learn(logisticRegression);
-		return logisticRegression;
 	}
 
 	LogisticRegression createLogisticRegression() {
@@ -152,7 +152,7 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 	}
 
 	@FunctionalInterface
-	static interface LearningAction extends Runnable {
+	static interface LearnFromFacts extends Runnable {
 
 	}
 
@@ -167,7 +167,7 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 	}
 
 	@FunctionalInterface
-	static interface LearnFromFactAction extends BiConsumer<Fact<Binomial>, LogisticRegression> {
+	static interface LearnFromFact extends BiConsumer<Fact<Binomial>, LogisticRegression> {
 
 	}
 }
