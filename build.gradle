@@ -9,6 +9,7 @@
 plugins {
     // Apply the java-library plugin to add support for Java Library
     id 'java-library'
+    id 'eclipse'
 }
 
 repositories {
@@ -27,5 +28,5 @@ dependencies {
     //implementation 'com.google.guava:guava:27.1-jre'
 
     // Use JUnit test framework
-    testImplementation 'junit:junit:4.12'
+    implementation 'junit:junit:4.12'
 }

@@ -56,15 +56,8 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 	}
 
 	void learn(LogisticRegression logisticRegression) {
-		whileStopCriteriaHasNotReached(() -> withEachFact(learnFromFact, logisticRegression));
-	}
-
-	private void whileStopCriteriaHasNotReached(LearnFromFacts action) {
-
-		for (int i = 0; i < params.getEpoches(); i++) {
-
-			action.run();
-		}
+		this.params.learningStopCriteria()
+				.whileStopCriteriaHasNotReached(() -> withEachFact(learnFromFact, logisticRegression));
 	}
 
 	ErrorCalculator calculateError = (fact, logisticRegression) -> this.params.getCostFunction().error(fact,
@@ -110,14 +103,6 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 
 	public static class LogisticRegressionParams {
 
-		public int getEpoches() {
-			return epoches;
-		}
-
-		public void setEpoches(int epoches) {
-			this.epoches = epoches;
-		}
-
 		public double getLearningRate() {
 			return learningRate;
 		}
@@ -125,18 +110,24 @@ public class LogisticRegressionLearningMachine implements Supervized<Binomial> {
 		public void setLearningRate(double alpha) {
 			this.learningRate = alpha;
 		}
-
-		private int epoches = 10000;
+		
 		private double learningRate = 0.001d;
 
+		
 		private CostFunction costFunction = new LogLikelihoodCostFunction();
-
+		
 		public CostFunction getCostFunction() {
 			return costFunction;
 		}
 
 		public void setCostFunction(CostFunction costFunction) {
 			this.costFunction = costFunction;
+		}
+		
+		private LearningStopCriteria stopCriteria = new EpochesStopCriteria();
+		
+		public LearningStopCriteria learningStopCriteria() {
+			return this.stopCriteria;
 		}
 		
 		private int complexity = 0;

@@ -4,20 +4,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ztysdmy.textmining.classifier.LogisticRegression.Monomial;
-import ztysdmy.textmining.model.Binomial;
-import ztysdmy.textmining.model.Fact;
 import ztysdmy.textmining.model.Term;
 import ztysdmy.textmining.model.TermsVectorBuilder;
 
 public class LogisticRegressionTest {
-
-	@Test
-	public void shouldProcessEmpty() throws Exception {
-		LogisticRegression logisticRegression = new LogisticRegression();
-		Fact<Binomial> fact = new Fact<>("test");
-		var result = logisticRegression.predict(fact);
-		Assert.assertEquals(0.5d, result.probability(), 0.d);
-	}
 	
 	@Test
 	public void testSumOfMonomials() throws Exception {
