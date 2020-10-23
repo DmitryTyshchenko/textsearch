@@ -14,6 +14,9 @@ plugins {
 }
 
 
+sourceCompatibility = JavaVersion.VERSION_14
+targetCompatibility = JavaVersion.VERSION_14
+
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
@@ -30,16 +33,27 @@ dependencies {
     //implementation 'com.google.guava:guava:27.1-jre'
 
     // Use JUnit test framework
-    implementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 }
 
 
 compileJava {
     doFirst {
         options.compilerArgs = [
-            '--module-path', classpath.asPath,
+            '--module-path', classpath.asPath, '--enable-preview'
         ]
         classpath = files()
     }
 }
 
+compileTestJava {
+     doFirst {
+        options.compilerArgs = [
+             '--enable-preview'
+        ]
+     }
+}
+
+test {
+    jvmArgs '--enable-preview'
+}
