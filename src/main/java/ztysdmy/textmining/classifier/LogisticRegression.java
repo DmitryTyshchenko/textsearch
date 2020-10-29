@@ -1,8 +1,11 @@
 package ztysdmy.textmining.classifier;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import ztysdmy.textmining.functions.Sigmoid;
 import ztysdmy.textmining.model.Binomial;
@@ -12,8 +15,11 @@ import ztysdmy.textmining.model.Target;
 import ztysdmy.textmining.model.Term;
 import ztysdmy.textmining.model.TermsVector;
 import ztysdmy.textmining.model.TermsVectorBuilder;
+import ztysdmy.textmining.pmml.DataDictionary;
+import ztysdmy.textmining.pmml.DataDictionary.DataField;
+import ztysdmy.textmining.pmml.PMMLExportable;
 
-public class LogisticRegression extends AbstractClassifier<Binomial> {
+public class LogisticRegression extends AbstractClassifier<Binomial> implements PMMLExportable {
 
 	public LogisticRegression(int complexity) {
 		super(complexity);
@@ -93,19 +99,31 @@ public class LogisticRegression extends AbstractClassifier<Binomial> {
 	
 	@Override
 	public String toString() {
-		
+
 		StringBuilder stringBuilder = new StringBuilder();
-		
+
 		stringBuilder.append(this.IDENTITY.weight());
-		
-		this.POLYNOMIAL.forEach((term, monomial)->{
+
+		this.POLYNOMIAL.forEach((term, monomial) -> {
 			stringBuilder.append("+");
 			stringBuilder.append(Double.toString(monomial.weight()));
 			stringBuilder.append("*");
 			stringBuilder.append(term.value());
 		});
-		
+
 		return stringBuilder.toString();
+	}
+
+	@Override
+	public DataDictionary dataDictionaty() {
+		var dataFields = dataFields();
+		return new DataDictionary(dataFields.size(), dataFields);
+	}
+
+	private List<DataField> dataFields() {
+
+		return this.POLYNOMIAL.keySet().stream().map(Term::value).map(DataField::fromValue)
+				.collect(Collectors.toList());
 	}
 	
 }

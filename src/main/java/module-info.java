@@ -1,9 +1,15 @@
-module ztysdmy.textmining {
+open module ztysdmy.textmining {
 	
 	requires java.base;
+	requires java.activation;
 	requires ztysdmy.functional;
+	requires java.xml.bind;
+	requires com.sun.xml.txw2;
+	
 	//requires junit;
 
+
+	
 	/**exports ztysdmy.textmining.model;
 	exports ztysdmy.textming.functions;
 	exports ztysdmy.textmining.classifier;
