@@ -19,10 +19,8 @@ public class PMMLGeneratorTest {
 		
 		logisticRegression.addTermToPolynomIfAbsent(new Term("a"));
 		
-		var builder = new PMML.Builder();
-		var header = new Header("Test", "Test");
-		var pmml = builder.setHeader(header).setDataDictionary(logisticRegression.dataDictionary()).build();
-		System.out.println(marshal(pmml));
+		
+		System.out.println(logisticRegression.toPMML("Test", "Test", "hello"));
 	}
 	
 }

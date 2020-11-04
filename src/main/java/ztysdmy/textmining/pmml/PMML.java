@@ -21,6 +21,9 @@ public class PMML {
 	@XmlElement(name = "DataDictionary")
 	private DataDictionary dataDictionary;
 	
+	@XmlElement(name = "RegressionModel")
+	private RegressionModel regressionModel;
+	
 	public void setVersion(String version) {
 		this.version = version;
 	}
@@ -37,6 +40,10 @@ public class PMML {
 		this.dataDictionary = dataDictionary;
 	}
 	
+	public void setRegressionModel(RegressionModel regressionModel) {
+		this.regressionModel = regressionModel;
+	}
+	
 	public static class Builder {
 
 		private Header header;
@@ -44,6 +51,7 @@ public class PMML {
 		private String xmlns;
 
 		private DataDictionary dataDictionary;
+		private RegressionModel  regressionModel;
 
 		public Builder setHeader(Header header) {
 			this.header = header;
@@ -65,12 +73,18 @@ public class PMML {
 			return this;
 		}
 
+		public Builder setRegressionModel(RegressionModel regressionModel) {
+			this.regressionModel = regressionModel;
+			return this;
+		}
+		
 		public PMML build() {
 			var pmml = new PMML();
 			pmml.setHeader(this.header);
 			pmml.setVersion(this.version);
 			pmml.setXmlns(this.xmlns);
 			pmml.setDataDictionary(this.dataDictionary);
+			pmml.setRegressionModel(this.regressionModel);
 			return pmml;
 		}
 	}

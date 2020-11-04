@@ -13,7 +13,10 @@ import ztysdmy.textmining.model.Term;
 import ztysdmy.textmining.model.TermsVector;
 import ztysdmy.textmining.model.TermsVectorBuilder;
 import ztysdmy.textmining.pmml.DataDictionary;
+import ztysdmy.textmining.pmml.Header;
+import ztysdmy.textmining.pmml.PMML;
 import ztysdmy.textmining.pmml.PMMLExportable;
+import ztysdmy.textmining.pmml.PMMLGenerator;
 import ztysdmy.textmining.pmml.RegressionModel;
 
 
@@ -112,15 +115,21 @@ public class LogisticRegression extends AbstractClassifier<Binomial> implements 
 		return stringBuilder.toString();
 	}
 
-	@Override
-	public DataDictionary dataDictionary() {
+	
+	DataDictionary dataDictionary() {
 		return LogisticRegressionToPMMLUtility.dataDictionary(this);
 	}
 
-	@Override
-	public RegressionModel regressionModel(String modelName) {
-		// TODO Auto-generated method stub
-		return null;
+	RegressionModel regressionModel(String modelName) {
+		return LogisticRegressionToPMMLUtility.regressionModel(modelName, this);
 	}
-	
+
+	public String toPMML(String description, String copyright, String modelName) {
+		var builder = new PMML.Builder();
+		var header = new Header(description, copyright);
+		var pmml = builder.setHeader(header).setDataDictionary(this.dataDictionary())
+				.setRegressionModel(this.regressionModel(modelName)).build();
+
+		return PMMLGenerator.marshal(pmml);
+	}
 }
