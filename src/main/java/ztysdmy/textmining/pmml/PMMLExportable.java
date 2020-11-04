@@ -2,5 +2,7 @@ package ztysdmy.textmining.pmml;
 
 public interface PMMLExportable {
 
-	DataDictionary dataDictionaty();
+	DataDictionary dataDictionary();
+	
+	RegressionModel regressionModel(String modelName);
 }

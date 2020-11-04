@@ -6,7 +6,7 @@ open module ztysdmy.textmining {
 	requires java.xml.bind;
 	requires com.sun.xml.txw2;
 	
-	//requires junit;
+	requires junit;
 
 
 	

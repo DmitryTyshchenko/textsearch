@@ -35,10 +35,7 @@ public class DataDictionary {
 		@XmlElement(name = "Value")
 		private final Value value;
 
-		/**
-		 * pmml standart states that DataField should have a name. However for
-		 * textmining name can coincide with the value.
-		 */
+		
 		public static DataField fromValue(String value) {
 			return new DataField(value, new Value(value));
 		}

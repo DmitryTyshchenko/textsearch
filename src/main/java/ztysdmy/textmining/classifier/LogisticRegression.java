@@ -1,11 +1,8 @@
 package ztysdmy.textmining.classifier;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import ztysdmy.textmining.functions.Sigmoid;
 import ztysdmy.textmining.model.Binomial;
@@ -16,8 +13,9 @@ import ztysdmy.textmining.model.Term;
 import ztysdmy.textmining.model.TermsVector;
 import ztysdmy.textmining.model.TermsVectorBuilder;
 import ztysdmy.textmining.pmml.DataDictionary;
-import ztysdmy.textmining.pmml.DataDictionary.DataField;
 import ztysdmy.textmining.pmml.PMMLExportable;
+import ztysdmy.textmining.pmml.RegressionModel;
+
 
 public class LogisticRegression extends AbstractClassifier<Binomial> implements PMMLExportable {
 
@@ -115,15 +113,14 @@ public class LogisticRegression extends AbstractClassifier<Binomial> implements 
 	}
 
 	@Override
-	public DataDictionary dataDictionaty() {
-		var dataFields = dataFields();
-		return new DataDictionary(dataFields.size(), dataFields);
+	public DataDictionary dataDictionary() {
+		return LogisticRegressionToPMMLUtility.dataDictionary(this);
 	}
 
-	private List<DataField> dataFields() {
-
-		return this.POLYNOMIAL.keySet().stream().map(Term::value).map(DataField::fromValue)
-				.collect(Collectors.toList());
+	@Override
+	public RegressionModel regressionModel(String modelName) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
